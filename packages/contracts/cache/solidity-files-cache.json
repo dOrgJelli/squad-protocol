@@ -180,8 +180,8 @@
       ]
     },
     "/mnt/d/DocumentsD/Programming/EzraWeller/Squad/squad-protocol/packages/contracts/contracts/Squad.sol": {
-      "lastModificationDate": 1617333721792,
-      "contentHash": "d7611a833ad6f587cf382b7bc6cc00de",
+      "lastModificationDate": 1617335101828,
+      "contentHash": "59e0edb228e313feab89c41d8f202358",
       "sourceName": "contracts/Squad.sol",
       "solcConfig": {
         "version": "0.8.3",

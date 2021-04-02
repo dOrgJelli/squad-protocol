@@ -12,7 +12,8 @@ import "./IRightsManager.sol";
  * Core contract for Squad, an open protocol for publishing and licensing intellectual property.
  */
 
-// New problem: when flattening the weights, the owner share for those licenses needs to be included, doesn't it?
+// TODO when flattening the weights, the owner share for those licenses needs to be included, doesn't it?
+    // Update: I think I fixed this
 
 contract Squad is Ownable, ISquad {
     /**
@@ -107,16 +108,21 @@ contract Squad is Ownable, ISquad {
         for (uint256 i = 0; i < weights.length; i = i + 1) {
             License memory license = licenses[weightsAddresses[i]][weightsIds[i]];
             if (license.id != 0) {
-                if (license.weights.length > 0) {
-                    for (uint256 j = 0; j < license.weights.length; j = j + 1) {
-                        if (license.weights[j] * weights[i] / 10000 != 0) {
+                if (license.weights.length > 0) { // include the second order weights as well as the first order
+                    // add first order weight
+                    resultsAddresses[resultsLength] = weightsAddresses[i];
+                    resultsIds[resultsLength] = weightsIds[i];
+                    resultsWeights[resultsLength] = weights[i] * license.ownerShare / 10000;
+                    resultsLength = resultsLength + 1;
+                    for (uint256 j = 0; j < license.weights.length; j = j + 1) { // add second order weights
+                        if (license.weights[j] * weights[i] / 10000 * license.ownerShare / 10000 != 0) {
                             resultsAddresses[resultsLength] = license.weightsAddresses[resultsLength];
                             resultsIds[resultsLength] = license.weightsIds[resultsLength];
-                            resultsWeights[resultsLength] = license.weights[j] * weights[i] / 10000;
+                            resultsWeights[resultsLength] = license.weights[j] * weights[i] / 10000 * license.ownerShare / 10000;
                             resultsLength = resultsLength + 1;
                         }
                     }
-                } else {
+                } else { // include just the first order weights
                     resultsAddresses[resultsLength] = weightsAddresses[i];
                     resultsIds[resultsLength] = weightsIds[i];
                     resultsWeights[resultsLength] = weights[i];
