@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./ISquad.sol";
 import "./IRightsManager.sol";
 
+import "hardhat/console.sol";
+
 /**
  * Core contract for Squad, an open protocol for publishing and licensing intellectual property.
  */
@@ -40,6 +42,7 @@ contract Squad is Ownable, ISquad {
     /**
      * Add or edit a license in the licenses mapping.
      * Also registers the NFT in the selected RightsManager contracts.
+     * Rev share weights are calculated off-chain and only submitted here.
      */
     event NFTRegistered(License license);
 
@@ -50,135 +53,45 @@ contract Squad is Ownable, ISquad {
         address[] memory weightsAddresses,
         uint256[] memory weightsIds,
         uint256[] memory weights,
-        address[] memory rightsAddresses,
-        address[] memory rightsTokens,
-        uint256[] memory rightsAmounts
+        address rightsAddress,
+        address rightsToken,
+        uint256 rightsAmount
     ) external onlyNFTOwner(nftAddress, nftId) {
         require(ownerShare <= 10000, "Owner's share greater than 10,000 basis points");
+        require(sumArray(weights) <= 10000, "Weights sum to more than 10,000 basis points");
         License storage license = licenses[nftAddress][nftId];
-        license.ownerShare = ownerShare;
-        (license.weightsAddresses, license.weightsIds, license.weights) = fullWeights(weightsAddresses, weightsIds, weights);
-        registerRights(
-            nftAddress,
-            nftId,
-            rightsAddresses,
-            rightsTokens,
-            rightsAmounts
-        );
+        (
+            license.ownerShare,
+            license.weightsAddresses, 
+            license.weightsIds, 
+            license.weights
+        ) = (ownerShare, weightsAddresses, weightsIds, weights);
+        IRightsManager rightsManager = IRightsManager(rightsAddress);
+        if (rightsManager.registerNFT(nftAddress, nftId) == true) {
+            license.rightsAddresses.push(rightsAddress);
+            RightsParams memory rightsParams = RightsParams(
+                rightsToken,
+                rightsAmount
+            );
+            license.rights.push(rightsParams);
+        }
         licenseCount = licenseCount + 1;
         license.id = licenseCount;
         emit NFTRegistered(license);
     }
 
-    function registerRights(
-        address nftAddress,
-        uint256 nftId,
-        address[] memory rightsAddresses,
-        address[] memory rightsTokens,
-        uint256[] memory rightsAmounts
-    ) internal {
-        License storage license = licenses[nftAddress][nftId];
-        for (uint256 i = 0; i < rightsAddresses.length; i = i + 1) {
-            IRightsManager rightsManager = IRightsManager(license.rightsAddresses[i]);
-            if (rightsManager.registerNFT(nftAddress, nftId) == true) {
-                license.rightsAddresses[i] = rightsAddresses[i];
-                RightsParams memory rightsParams = RightsParams(
-                    rightsTokens[i],
-                    rightsAmounts[i]
-                );
-                license.rights[i] = rightsParams;
-            }
+    function sumArray(uint256[] memory array) internal pure returns (uint256) {
+        uint256 sum = 0;
+        for (uint256 i = 0; i < array.length; i += 1) {
+            sum += array[i];
         }
+        return sum;
     }
 
-    /**
-     * Construct the full weights for a license by adding in the integrated works' weights.
-     * Note: this function currently doesn't compress weights, so a license can have two or 
-     * more weights with the same address/id.
-     */
-    function fullWeights(
-        address[] memory weightsAddresses,
-        uint256[] memory weightsIds,
-        uint256[] memory weights
-    ) view internal returns (address[] memory, uint256[] memory, uint256[] memory) {
-        uint256 resultsLength = 0;
-        address[] memory resultsAddresses;
-        uint256[] memory resultsIds;
-        uint256[] memory resultsWeights;
-        for (uint256 i = 0; i < weights.length; i = i + 1) {
-            License memory license = licenses[weightsAddresses[i]][weightsIds[i]];
-            if (license.id != 0) {
-                if (license.weights.length > 0) { // include the second order weights as well as the first order
-                    // add first order weight
-                    resultsAddresses[resultsLength] = weightsAddresses[i];
-                    resultsIds[resultsLength] = weightsIds[i];
-                    resultsWeights[resultsLength] = weights[i] * license.ownerShare / 10000;
-                    resultsLength = resultsLength + 1;
-                    for (uint256 j = 0; j < license.weights.length; j = j + 1) { // add second order weights
-                        if (license.weights[j] * weights[i] / 10000 * license.ownerShare / 10000 != 0) {
-                            resultsAddresses[resultsLength] = license.weightsAddresses[resultsLength];
-                            resultsIds[resultsLength] = license.weightsIds[resultsLength];
-                            resultsWeights[resultsLength] = license.weights[j] * weights[i] / 10000 * license.ownerShare / 10000;
-                            resultsLength = resultsLength + 1;
-                        }
-                    }
-                } else { // include just the first order weights
-                    resultsAddresses[resultsLength] = weightsAddresses[i];
-                    resultsIds[resultsLength] = weightsIds[i];
-                    resultsWeights[resultsLength] = weights[i];
-                    resultsLength = resultsLength + 1;
-                }
-            }
-        }
-        return (resultsAddresses, resultsIds, resultsWeights);
+    function getLicense(address nftAddress, uint256 nftId) override external view returns (License memory) {
+        License memory license = licenses[nftAddress][nftId];
+        return license;
     }
-
-    /*
-
-    Fully recursive version of fullWeights -- I believe this should not be needed
-
-    function fullWeights(
-        address[] memory weightsAddresses,
-        uint256[] memory weightsIds,
-        uint256[] memory weights
-    ) internal returns (address[] memory, uint256[] memory, uint256[] memory) {
-        uint256 resultsLength = 0;
-        address[] memory resultsAddresses;
-        uint256[] memory resultsIds;
-        uint256[] memory resultsWeights;
-        for (uint256 i = 0; i < weights.length; i = i + 1) {
-            License memory license = licenses[weightsAddresses[i]][weightsIds[i]];
-            if (license.id != 0) {
-                if (license.weights.length > 0) {
-                    (
-                        address[] memory subweightsAddresses, 
-                        uint256[] memory subweightsIds,
-                        uint256[] memory subweights
-                    ) = fullWeights(
-                        license.weightsAddresses,
-                        license.weightsIds,
-                        license.weights
-                    );
-                    for(uint256 j = 0; j < subweights.length; j = j + 1) {
-                        if(subweights[j] * weights[i] / 10000 != 0) {
-                            resultsAddresses[resultsLength] = subweightsAddresses[resultsLength];
-                            resultsIds[resultsLength] = subweightsIds[resultsLength];
-                            resultsWeights[resultsLength] = subweights[j] * weights[i] / 10000;
-                            resultsLength = resultsLength + 1;
-                        }
-                    }
-                } else {
-                    resultsAddresses[resultsLength] = weightsAddresses[i];
-                    resultsIds[resultsLength] = weightsIds[i];
-                    resultsWeights[resultsLength] = weights[i];
-                    resultsLength = resultsLength + 1;
-                }
-            }
-        }
-        return (resultsAddresses, resultsIds, resultsWeights);
-    }
-
-    */
 
     function rightsParamsFor(
         address nftAddress, 
@@ -211,7 +124,7 @@ contract Squad is Ownable, ISquad {
         License memory license = licenses[nftAddress][nftId];
         require(license.id != 0, "NFT does not have license");
         address nftOwner = ERC721(nftAddress).ownerOf(nftId);
-        uint256 nftOwnerAmount = license.ownerShare / 10000 * amount;
+        uint256 nftOwnerAmount = license.ownerShare * amount / 10000;
         uint256 remainder = amount - nftOwnerAmount;
         if (tokenMapping[asset] == false) { 
             tokenMapping[asset] = true;
@@ -219,7 +132,7 @@ contract Squad is Ownable, ISquad {
         }
         for (uint256 i = 0; i < license.weights.length; i = i + 1) {
             address beneficiary = ERC721(license.weightsAddresses[i]).ownerOf(license.weightsIds[i]);
-            uint256 beneficiaryAmount = (10000 - license.ownerShare) * license.weights[i] / 10000 * remainder;
+            uint256 beneficiaryAmount = (10000 - license.ownerShare) * license.weights[i] * remainder / 100000000;
             balances[asset][beneficiary] = balances[asset][beneficiary] + beneficiaryAmount;
             remainder = remainder - beneficiaryAmount;
         }
@@ -279,6 +192,10 @@ contract Squad is Ownable, ISquad {
             rightsManagers.push(rightsManager);
         }
         emit AddRightsManager(rightsManager);
+    }
+
+    function getRightsManagers() external view returns (address[] memory) {
+        return rightsManagers;
     }
 
     event RemoveRightsManager(address[] rightsManagers, address removedRightsManager);

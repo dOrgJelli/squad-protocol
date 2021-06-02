@@ -2,6 +2,8 @@
  * @type import('hardhat/config').HardhatUserConfig
  */
 
+require("@nomiclabs/hardhat-waffle")
+
 const ROPSTEN_PRIVATE_KEY = 'placeholder'
 
 module.exports = {

@@ -2,4 +2,8 @@ node_modules
 */node_modules
 */*/node_modules
 
+packages/contracts/artifacts
+packages/contracts/artifacts/*
+packages/contracts/cache
+
 yarn-error.log

@@ -24,6 +24,8 @@ interface ISquad {
         // TODO description
     }
 
+    function getLicense(address nftAddress, uint256 nftId) external view returns (License memory);
+
     function rightsParamsFor(
         address nftAddress, 
         uint256 nftId, 
