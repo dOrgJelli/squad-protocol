@@ -80,14 +80,6 @@ contract Squad is Ownable, ISquad {
         emit NFTRegistered(license);
     }
 
-    function sumArray(uint256[] memory array) internal pure returns (uint256) {
-        uint256 sum = 0;
-        for (uint256 i = 0; i < array.length; i += 1) {
-            sum += array[i];
-        }
-        return sum;
-    }
-
     function getLicense(address nftAddress, uint256 nftId) override external view returns (License memory) {
         License memory license = licenses[nftAddress][nftId];
         return license;
@@ -114,55 +106,65 @@ contract Squad is Ownable, ISquad {
 
     /**
      * Called by registered RightsManager contracts when they send the 
-     * this contract assets. Looks up the NFT’s license and adjusts the 
+     * this contract tokens. Looks up the NFT’s license and adjusts the 
      * accounting balances of the owner and other beneficiaries according to 
-     * the owner's share and the weights. If the asset is not already listed 
+     * the owner's share and the weights. If the token is not already listed 
      * in the accounting system, adds it.
      */
 
-    function addPayment(address asset, uint256 amount, address nftAddress, uint256 nftId) override external onlyRightsManagers {
+    // Is there a reason for this to be restricted to rights managers?
+
+    function addPayment(address token, uint256 amount, address nftAddress, uint256 nftId) override external {
         License memory license = licenses[nftAddress][nftId];
         require(license.id != 0, "NFT does not have license");
         address nftOwner = ERC721(nftAddress).ownerOf(nftId);
         uint256 nftOwnerAmount = license.ownerShare * amount / 10000;
-        uint256 remainder = amount - nftOwnerAmount;
-        if (tokenMapping[asset] == false) { 
-            tokenMapping[asset] = true;
-            tokenArray.push(asset);
+        uint256 beneficiariesAmount = amount - nftOwnerAmount;
+        uint256 remainder = beneficiariesAmount;
+        if (tokenMapping[token] == false) { 
+            tokenMapping[token] = true;
+            tokenArray.push(token);
         }
         for (uint256 i = 0; i < license.weights.length; i = i + 1) {
             address beneficiary = ERC721(license.weightsAddresses[i]).ownerOf(license.weightsIds[i]);
-            uint256 beneficiaryAmount = (10000 - license.ownerShare) * license.weights[i] * remainder / 100000000;
-            balances[asset][beneficiary] = balances[asset][beneficiary] + beneficiaryAmount;
+            uint256 beneficiaryAmount = license.weights[i] * beneficiariesAmount / 10000;
+            balances[token][beneficiary] = balances[token][beneficiary] + beneficiaryAmount;
             remainder = remainder - beneficiaryAmount;
         }
-        balances[asset][nftOwner] = balances[asset][nftOwner] + nftOwnerAmount + remainder;
-        emit PaymentAdded(asset, amount, nftAddress, nftId);
+        balances[token][nftOwner] = balances[token][nftOwner] + nftOwnerAmount + remainder;
+        emit PaymentAdded(token, amount, nftAddress, nftId);
+    }
+
+    function tokens() external view returns (address[] memory) {
+        return tokenArray;
+    }
+
+    function balance(address token, address recipient) external view returns (uint256) {
+        require(tokenMapping[token] == true, "Token is not registered");
+        return balances[token][recipient];
     }
 
     /**
-     * Sends any of the asset held in its accounting system for the given address 
+     * Sends any of the token held in its accounting system for the given address 
      * to that address, minus a fee. Can be called by anyone on behalf of any 
      * address.
      */
     event Withdrawal(
-        address asset,
-        bool Eth,
+        address token,
         address recipient,
         uint256 amount,
-        address owner,
-        uint256 ownerFee
+        address squadOwner,
+        uint256 squadFee
     );
 
-    function withdraw(address asset, address recipient) external {
-        uint256 feeAmount = balances[asset][recipient] * fee / 10000;
-        uint256 recipientAmount = balances[asset][recipient] - feeAmount;
-        balances[asset][recipient] = balances[asset][recipient] - recipientAmount - feeAmount;
-        require(ERC20(asset).transfer(recipient, recipientAmount), "Recipient ERC20 withdrawal failed.");
-        require(ERC20(asset).transfer(owner(), feeAmount), "ERC20 withdrawal fee failed");
+    function withdraw(address token, address recipient) external {
+        uint256 feeAmount = balances[token][recipient] * fee / 10000;
+        uint256 recipientAmount = balances[token][recipient] - feeAmount;
+        balances[token][recipient] = balances[token][recipient] - recipientAmount - feeAmount;
+        require(ERC20(token).transfer(recipient, recipientAmount), "Recipient ERC20 withdrawal failed.");
+        require(ERC20(token).transfer(owner(), feeAmount), "ERC20 withdrawal fee failed");
         emit Withdrawal(
-            asset,
-            false,
+            token,
             recipient,
             recipientAmount,
             owner(),
@@ -217,6 +219,15 @@ contract Squad is Ownable, ISquad {
         emit SetFee(oldFee, fee);
     }
 
+    function sumArray(uint256[] memory array) internal pure returns (uint256) {
+        uint256 sum = 0;
+        for (uint256 i = 0; i < array.length; i += 1) {
+            sum += array[i];
+        }
+        return sum;
+    }
+/*
+    // TODO: contract currently shouldn't be able to receive ether
     event ReceiveEther(uint256 amount);
 
     receive() external payable {
@@ -226,7 +237,7 @@ contract Squad is Ownable, ISquad {
     fallback() external payable {
         emit ReceiveEther(msg.value);
     }
-
+*/
     /**
      * Modifiers
      */
@@ -235,6 +246,7 @@ contract Squad is Ownable, ISquad {
         _;
     }
 
+/*
     modifier onlyRightsManagers {
         bool msgSenderFound = false;
         for (uint256 i = 0; i < rightsManagers.length; i = i + 1) {
@@ -243,4 +255,5 @@ contract Squad is Ownable, ISquad {
         require(msgSenderFound == true, "Message sender is not a registered rights manager contract");
         _;
     }
+    */
 }

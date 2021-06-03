@@ -85,6 +85,7 @@ describe('Squad', () => {
         const [, amount] = await squadRights1.price(erc721.address, nftIdAlice)
         await token1Bob.approve(squadRights1.address, amount)
         await squadRights1Bob.buy(erc721.address, nftIdAlice)
+        await squad.withdraw(token1.address, alice)
     })
 
     // helpers
@@ -228,5 +229,8 @@ describe('Squad', () => {
         await token1Alice.approve(squadRights1.address, ethers.utils.parseEther('10'))
         await squadRights1Alice.buy(erc721.address, nftCount)
         assert.isTrue(await squadRights1.check(erc721.address, nftCount, alice))
+
+        assert.equal(ethers.utils.formatEther(await squad.balance(token1.address, bob)), '5.0')
+        assert.equal(ethers.utils.formatEther(await squad.balance(token1.address, alice)), '5.0')
     })
 })
