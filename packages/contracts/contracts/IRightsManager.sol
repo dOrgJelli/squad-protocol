@@ -10,11 +10,9 @@ interface IRightsManager {
      */
     function registerNFT(address nftAddress, uint256 nftId) external returns (bool);
 
-    // Check if a given address holds this contract's right.
-    function check(address nftAddress, uint256 nftId, address toCheck) external returns (bool);
-
     /**
      * Contracts using this interface should generally also have 1) a viewable description of what type of usage 
-     * rights the contract is meant to manage 2) a function to mint rights to a given address.
+     * rights the contract is meant to manage 2) a function to mint rights to a given address, 3) a function to check if an entity 
+     * holds rights.
      */
 }

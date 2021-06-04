@@ -28,8 +28,8 @@ interface ISquad {
 
     function rightsParamsFor(
         address nftAddress, 
-        uint256 nftId, 
-        address rightsManager
+        uint256 nftId 
+        // address rightsManager
     ) external view returns (address, uint256);
 
     event PaymentAdded(

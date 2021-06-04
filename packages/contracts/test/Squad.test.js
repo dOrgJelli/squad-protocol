@@ -1,10 +1,12 @@
 const { assert, expect } = require('chai')
 
+const zeroAddress = "0x0000000000000000000000000000000000000000"
+
 describe('Squad', () => {
-    let alice, bob, 
+    let owner, alice, bob, 
         squad, squadAlice, squadBob, 
-        squadRights1, squadRights1Alice, squadRights1Bob,
-        squadRights2, squadRights2Alice, squadRights2Bob,
+        purchaseRights1, purchaseRights1Alice, purchaseRights1Bob,
+        purchaseRights2, purchaseRights2Alice, purchaseRights2Bob,
         token1, token1Alice, token1Bob,
         token2, token2Alice, token2Bob,
         erc721
@@ -14,7 +16,7 @@ describe('Squad', () => {
 
     // before should:
         // establish 2+ user accounts (alice + bob)
-        // deploy Squad w/ a non-0 fee, SquadRights x2, ERC20Mintable (reserve) x2, and an ERC721
+        // deploy Squad w/ a non-0 fee, PurchaseRights x2, ERC20Mintable (reserve) x2, and an ERC721
         // mint 2 NFTs (1 for bob, 1 for alice)
         // mint some of both ERC20s for alice and bob
         // register one NFT without weights
@@ -22,22 +24,23 @@ describe('Squad', () => {
 
     beforeEach(async () => {
         const wallets = await ethers.getSigners()
+        owner = await wallets[0].getAddress()
         alice = await wallets[1].getAddress()
         bob = await wallets[2].getAddress()
 
         // deploy RightsManagers
-        const SquadRights = await ethers.getContractFactory('SquadRights')
-        squadRights1 = await SquadRights.deploy()
-        squadRights1Alice = squadRights1.connect(wallets[1])
-        squadRights1Bob = squadRights1.connect(wallets[2])
+        const PurchaseRights = await ethers.getContractFactory('PurchaseRights')
+        purchaseRights1 = await PurchaseRights.deploy()
+        purchaseRights1Alice = purchaseRights1.connect(wallets[1])
+        purchaseRights1Bob = purchaseRights1.connect(wallets[2])
 
-        squadRights2 = await SquadRights.deploy()
-        squadRights2Alice = squadRights2.connect(wallets[1])
-        squadRights2Bob = squadRights2.connect(wallets[2])
+        purchaseRights2 = await PurchaseRights.deploy()
+        purchaseRights2Alice = purchaseRights2.connect(wallets[1])
+        purchaseRights2Bob = purchaseRights2.connect(wallets[2])
         
         // deploy Squad with one rights manager and non-0 fee
         const Squad = await ethers.getContractFactory('Squad')
-        squad = await Squad.deploy([squadRights1.address], 100)
+        squad = await Squad.deploy([purchaseRights1.address], 100)
         squadAlice = squad.connect(wallets[1])
         squadBob = squad.connect(wallets[2])
         
@@ -55,8 +58,8 @@ describe('Squad', () => {
         erc721 = await ERC721.deploy('NFT', 'NFT')
 
         // transfer RightsManagers ownership to Squad
-        await squadRights1.transferOwnership(squad.address)
-        await squadRights2.transferOwnership(squad.address)
+        await purchaseRights1.transferOwnership(squad.address)
+        await purchaseRights2.transferOwnership(squad.address)
 
         // mint tokens for Alice and Bob
         await token1.mint(alice, ethers.utils.parseEther('1000'))
@@ -68,7 +71,7 @@ describe('Squad', () => {
         await erc721.mint(alice, nftIdAlice)
         await erc721.mint(bob, nftIdBob)
         
-        // register Alice's NFT in Squad with squadRights1
+        // register Alice's NFT in Squad with purchaseRights1
         await squadAlice.registerNFT(
             erc721.address, 
             nftIdAlice,
@@ -76,15 +79,15 @@ describe('Squad', () => {
             [],
             [],
             [],
-            squadRights1.address,
+            purchaseRights1.address,
             token1.address,
             ethers.utils.parseEther('10')
         )
 
-        // Bob buy rights in Alice's NFT from squadRights1
-        const [, amount] = await squadRights1.price(erc721.address, nftIdAlice)
-        await token1Bob.approve(squadRights1.address, amount)
-        await squadRights1Bob.buy(erc721.address, nftIdAlice)
+        // Bob buy rights to Alice's NFT from purchaseRights1
+        const [, amount] = await purchaseRights1.price(erc721.address, nftIdAlice)
+        await token1Bob.approve(purchaseRights1.address, amount)
+        await purchaseRights1Bob.buy(erc721.address, nftIdAlice)
         await squad.withdraw(token1.address, alice)
     })
 
@@ -115,30 +118,10 @@ describe('Squad', () => {
         return [resultsAddresses, resultsIds, resultsWeights]
     }
 
-    // non-owner of NFT can't register that NFT 
-    // owner can register an NFT with weights
-        // ERC20s created by rights managers
-        // license is stored correctly
-            // Rights Params are correct
-            // weights are correct
-                // test this by going deep 3+ layers and checking that weights stay correct
-        // ownerShare cannot be greater than 10,000
-        // sum of weights cannot be greater than 10,000
-    // rightsParamsFor returns correct data
-    // addresses that are not registered rightsManagers cannot addPayment
-    // addPayment with a new ERC20 adds the token to the system
-    // addPayment changes accounting balances correctly according to the weights
-    // withdraw retrieves the expected amount for the user and the fee
-    // 0 address cannot be added as a rightsManager
-    // valid address can be added as a rightsManager
-    // rightsManagers can be removed with a valid index
-    // removing a rightsManager leaves a "whole" in the array, which adding a new rightsManager will "fill"
-    // setFee updates the fee properly
-
     it('cannot be constructed with a fee higher than 10000', async () => {
         const Squad = await ethers.getContractFactory('Squad')
         try {
-            await Squad.deploy([squadRights1.address], 10001)
+            await Squad.deploy([purchaseRights1.address], 10001)
         } catch (e) {
             assert.equal(e.name, 'ProviderError')
         }
@@ -153,7 +136,7 @@ describe('Squad', () => {
                 [],
                 [],
                 [],
-                squadRights1.address,
+                purchaseRights1.address,
                 token1.address,
                 ethers.utils.parseEther('10')
             )
@@ -171,7 +154,7 @@ describe('Squad', () => {
                 [],
                 [],
                 [],
-                squadRights1.address,
+                purchaseRights1.address,
                 token1.address,
                 ethers.utils.parseEther('1')
             )
@@ -189,7 +172,7 @@ describe('Squad', () => {
                 [erc721.address, erc721.address],
                 [nftIdAlice, nftIdAlice],
                 [5000, 5001],
-                squadRights1.address,
+                purchaseRights1.address,
                 token1.address,
                 ethers.utils.parseEther('1')
             )
@@ -198,11 +181,11 @@ describe('Squad', () => {
         }
     })
 
-    it('lets an owner register an NFT with weights, which someone else can buy rights to', async () => {
+    it('lets an owner register an NFT with weights, which someone else can buy rights to, distributing payments properly', async () => {
         const weightsAddresses = []
         const weightsIds = []
         const weights = []
-        const length = 50
+        const length = 20
         for (let i = 0; i < length; i++) {
             weightsAddresses.push(erc721.address)
             weightsIds.push(nftIdAlice)
@@ -217,7 +200,7 @@ describe('Squad', () => {
             weightsAddresses,
             weightsIds,
             weights,
-            squadRights1.address,
+            purchaseRights1.address,
             token1.address,
             ethers.utils.parseEther('10')
         )
@@ -226,11 +209,64 @@ describe('Squad', () => {
         assert.equal(length, license.weightsIds.length)
         assert.equal(length, license.weights.length)
         
-        await token1Alice.approve(squadRights1.address, ethers.utils.parseEther('10'))
-        await squadRights1Alice.buy(erc721.address, nftCount)
-        assert.isTrue(await squadRights1.check(erc721.address, nftCount, alice))
+        await token1Alice.approve(purchaseRights1.address, ethers.utils.parseEther('10'))
+        await purchaseRights1Alice.buy(erc721.address, nftCount)
+        assert.isTrue(await purchaseRights1.check(erc721.address, nftCount, alice))
 
         assert.equal(ethers.utils.formatEther(await squad.balance(token1.address, bob)), '5.0')
         assert.equal(ethers.utils.formatEther(await squad.balance(token1.address, alice)), '5.0')
+    })
+
+    it('returns correct rights params', async () => {
+        const params = await squad.rightsParamsFor(erc721.address, nftIdAlice)
+        assert.equal(params[0], token1.address)
+        assert.equal(ethers.utils.formatEther(params[1]), '10.0')
+    })
+
+    it('pays the owner of squad the correct fee', async () => {
+        assert.equal(ethers.utils.formatEther(await token1.balanceOf(owner)), '0.1')
+    })
+
+    it('does not let you add the 0 address as a rights manager', async () => {
+        try {
+            await squad.addRightsManager(zeroAddress)
+        } catch (e) {
+            assert.equal(e.name, 'ProviderError')
+        }
+    })
+
+    it('allows a valid address to be added as a rights manager', async () => {
+        await squad.addRightsManager(purchaseRights2.address)
+        const managers = await squad.getRightsManagers()
+        assert.equal(managers[1], purchaseRights2.address)
+    })
+
+    it('leaves a empty array index after removing a rightsManager, which is filled when adding a new one', async () => {
+        let managers = await squad.getRightsManagers()
+        assert.notEqual(managers[0], zeroAddress)
+
+        await squad.addRightsManager(purchaseRights2.address)
+        await squad.removeRightsManager(0)
+        managers = await squad.getRightsManagers()
+        assert.equal(managers[0], zeroAddress)
+
+        await squad.addRightsManager(purchaseRights1.address)
+        managers = await squad.getRightsManagers()
+        assert.notEqual(managers[0], zeroAddress)
+    })
+
+    it('lets the owner update the fee properly', async () => {
+        const newFee = 1000
+        await squad.setFee(newFee)
+        const fee = Number(await squad.getFee())
+        assert.equal(newFee, fee)
+    })
+
+    it('does not let non-owners set the fee', async () => {
+        try {
+            await squadAlice.setFee(1000)
+        } catch (e) {
+            assert.equal(e.name, 'ProviderError')
+        }
     })
 })

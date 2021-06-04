@@ -14,9 +14,6 @@ import "hardhat/console.sol";
  * Core contract for Squad, an open protocol for publishing and licensing intellectual property.
  */
 
-// TODO when flattening the weights, the owner share for those licenses needs to be included, doesn't it?
-    // Update: I think I fixed this
-
 contract Squad is Ownable, ISquad {
     /**
      * Usage rights state
@@ -38,6 +35,9 @@ contract Squad is Ownable, ISquad {
         rightsManagers = _rightsManagers;
         fee = _fee;
     }
+
+    // TODO payment system should likely be a separate contract
+    // TODO be able to add/remove rights params to licenses, either with a separate edit function or re-adding multiple rights params to registerNFT
 
     /**
      * Add or edit a license in the licenses mapping.
@@ -87,12 +87,13 @@ contract Squad is Ownable, ISquad {
 
     function rightsParamsFor(
         address nftAddress, 
-        uint256 nftId, 
-        address rightsManager
+        uint256 nftId 
+        // address rightsManager // TODO this commented code is needed only if licenses have multiple rightsParams
     ) override external view returns (address, uint256) {
         License memory license = licenses[nftAddress][nftId];
         require(license.id != 0, "NFT does not have license");
         uint256 rightsIndex = 0;
+        /*
         bool rightsExist = false;
         for (uint256 i = 0; i < license.rights.length; i = i + 1) {
             if (license.rightsAddresses[i] == rightsManager) {
@@ -101,6 +102,7 @@ contract Squad is Ownable, ISquad {
             }
         }
         require(rightsExist == true, "Rights do not exist");
+        */
         return (license.rights[rightsIndex].token, license.rights[rightsIndex].amount);
     }
 
@@ -112,7 +114,8 @@ contract Squad is Ownable, ISquad {
      * in the accounting system, adds it.
      */
 
-    // Is there a reason for this to be restricted to rights managers?
+    // TODO a possibly more efficient way to do this would be to store on chain only the hash of a given licenses weights, then submit the weights
+    // when adding a payment where they can be hashed to prove they are correct. Not sure if this is actually more efficient, though.
 
     function addPayment(address token, uint256 amount, address nftAddress, uint256 nftId) override external {
         License memory license = licenses[nftAddress][nftId];
@@ -179,7 +182,7 @@ contract Squad is Ownable, ISquad {
     
     function addRightsManager(address rightsManager) external onlyOwner {
         // TODO consider adding ERC165 to IRightsManager so we can confirm the interface here?
-        require(rightsManager != address(0), "0 address submitted to addRightsManager");
+        require(rightsManager != address(0), "Cannot add 0 address as RightsManager");
         uint256 emptyIndex = 0;
         bool emptySlot = false;
         for (uint256 i = 0; i < rightsManagers.length; i = i + 1) {
@@ -210,6 +213,10 @@ contract Squad is Ownable, ISquad {
         emit RemoveRightsManager(rightsManagers, removedRightsManager);
     }
 
+    function getFee() external view returns (uint256) {
+        return fee;
+    }
+
     event SetFee(uint256 oldFee, uint256 newFee);
 
     function setFee(uint256 _fee) external onlyOwner {
@@ -226,18 +233,7 @@ contract Squad is Ownable, ISquad {
         }
         return sum;
     }
-/*
-    // TODO: contract currently shouldn't be able to receive ether
-    event ReceiveEther(uint256 amount);
 
-    receive() external payable {
-        emit ReceiveEther(msg.value);
-    }
-
-    fallback() external payable {
-        emit ReceiveEther(msg.value);
-    }
-*/
     /**
      * Modifiers
      */
@@ -245,15 +241,4 @@ contract Squad is Ownable, ISquad {
         require(msg.sender == ERC721(nftAddress).ownerOf(nftId), "Message sender does not own NFT");
         _;
     }
-
-/*
-    modifier onlyRightsManagers {
-        bool msgSenderFound = false;
-        for (uint256 i = 0; i < rightsManagers.length; i = i + 1) {
-            if (msg.sender == rightsManagers[i]) { msgSenderFound = true; }
-        }
-        require(msgSenderFound == true, "Message sender is not a registered rights manager contract");
-        _;
-    }
-    */
 }
