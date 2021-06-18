@@ -135,28 +135,27 @@ contract Royalties is Ownable {
             ),
             "Invalid proof"
         );
-        
+
+        uint256 claimedAmount = scaleAmountByPercentage(
+            balanceForWindow[window],
+            scaledPercentageAllocation
+        );
         transferToken(
             account,
             // The absolute amount that's claimable.
-            scaleAmountByPercentage(
-                balanceForWindow[window],
-                scaledPercentageAllocation
-            )
+            claimedAmount
         );
+        previousTotalBalance -= claimedAmount;
     }
 
-    function incrementWindow(bytes32 merkleRoot) public {
+    function incrementWindow(bytes32 merkleRoot) public onlyOwner {
         uint256 fundsAvailable;
-        if (currentWindow == 0) {
-            fundsAvailable = IERC20(tokenAddress).balanceOf(address(this));
-        } else {
-            fundsAvailable = IERC20(tokenAddress).balanceOf(address(this)) - previousTotalBalance;
-        }
+        fundsAvailable = IERC20(tokenAddress).balanceOf(address(this)) - previousTotalBalance;
         require(fundsAvailable > 0, "No additional funds for window");
 
         previousTotalBalance += fundsAvailable;
 
+        // TODO no fee for now
         uint256 fee = scaleAmountByPercentage(fundsAvailable, SCALED_FEE_PERCENTAGE);
         feesEarned += fee;
         uint256 remainder = fundsAvailable - fee;

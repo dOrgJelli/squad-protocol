@@ -90,7 +90,7 @@ contract PurchasableLicense is License {
         external 
         onlyNFTOwner(nftAddress, nftId) 
     {
-        registeredNFTs[nftAddress][nftId] = registeredNFTs[address(0)][0];
+        delete registeredNFTs[nftAddress][nftId];
 
         emit NFTUnregistered(
             nftAddress,
@@ -114,12 +114,8 @@ contract PurchasableLicense is License {
     ) external {
         LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
         uint256 purchasePrice = licenseParams.price * numberToBuy;
-        require(
-            purchaseToken.allowance(purchaser, address(this)) >= purchasePrice,
-            "Invalid allowance"
-        );
 
-        purchaseToken.transferFrom(purchaser, royaltiesAddress, purchasePrice);
+        require(purchaseToken.transferFrom(purchaser, royaltiesAddress, purchasePrice), "Transfer failed: was the allowance set correctly?");
         licenseParams.licenseToken.mint(purchaser, numberToBuy);
 
         emit Purchase(
