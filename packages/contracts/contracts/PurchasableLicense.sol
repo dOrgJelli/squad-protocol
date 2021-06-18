@@ -5,14 +5,43 @@ pragma solidity 0.8.5;
 import "./License.sol";
 import "./ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// To allow creating and registering in one call with Zora:
-import "./utils/IMedia.sol";
-import "./utils/IMarket.sol";
+
+/* Interfaces needed to mint NFTs on Zora */
+
+interface IMarket {
+    struct D256 {
+        uint256 value;
+    }
+
+    struct BidShares {
+        // % of sale value that goes to the _previous_ owner of the nft
+        D256 prevOwner;
+        // % of sale value that goes to the original creator of the nft
+        D256 creator;
+        // % of sale value that goes to the seller (current owner) of the nft
+        D256 owner;
+    }
+}
+
+interface IMedia {
+    struct MediaData {
+        // A valid URI of the content represented by this token
+        string tokenURI;
+        // A valid URI of the metadata associated with this token
+        string metadataURI;
+        // A SHA256 hash of the content pointed to by tokenURI
+        bytes32 contentHash;
+        // A SHA256 hash of the content pointed to by metadataURI
+        bytes32 metadataHash;
+    }
+
+    function mint(MediaData calldata data, IMarket.BidShares calldata bidShares) external;
+}
 
 contract PurchasableLicense is License {
     struct LicenseParams {
         uint256 price;
-        uint256 requiredSharePercentage;
+        uint256 sharePercentage;
         ERC20Mintable licenseToken;
     }
 
@@ -35,7 +64,7 @@ contract PurchasableLicense is License {
         address nftAddress, 
         uint256 nftId, 
         uint256 price, 
-        uint256 requiredSharePercentage,
+        uint256 sharePercentage,
         address licenseTokenAddress
     );
 
@@ -43,11 +72,16 @@ contract PurchasableLicense is License {
         address nftAddress, 
         uint256 nftId, 
         uint256 price, 
-        uint256 requiredSharePercentage
+        uint256 sharePercentage
     ) 
         public 
         onlyNFTOwner(nftAddress, nftId)
     {
+        require(
+            0 <= sharePercentage && sharePercentage <= 100, 
+            "sharePercentage less than 0 or greater than 100."
+        );
+
         ERC721 nft = ERC721(nftAddress);
         string memory name = string(abi.encodePacked(NAME, nft.name(), nftId));
         string memory symbol = string(abi.encodePacked("l", nft.symbol(), nftId));
@@ -55,7 +89,7 @@ contract PurchasableLicense is License {
         
         registeredNFTs[nftAddress][nftId] = LicenseParams(
             price,
-            requiredSharePercentage,
+            sharePercentage,
             licenseToken
         );
         
@@ -63,11 +97,12 @@ contract PurchasableLicense is License {
             nftAddress,
             nftId,
             price,
-            requiredSharePercentage,
+            sharePercentage,
             address(licenseToken)
         );
     }
 
+    /*
     // Using Zora
     function createAndRegisterNFT(
         IMedia.MediaData calldata data, 
@@ -75,11 +110,12 @@ contract PurchasableLicense is License {
         address zoraAddress,
         uint256 nftId, 
         uint256 price, 
-        uint256 requiredSharePercentage
+        uint256 sharePercentage
     ) external {
       // how do we get the new token ID from this??
         IMedia(zoraAddress).mint(data, bidShares);
     }
+    */
 
     event NFTUnregistered(
       address nftAddress,
@@ -125,5 +161,13 @@ contract PurchasableLicense is License {
             numberToBuy,
             address(licenseParams.licenseToken)
         );
+    }
+
+    function holdsLicense(
+        address nftAddress, 
+        uint256 nftId, 
+        address holder
+    ) external view returns(bool) {
+        return (registeredNFTs[nftAddress][nftId].licenseToken.balanceOf(holder) >= 1 ether);
     }
 }

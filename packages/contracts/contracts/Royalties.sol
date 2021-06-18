@@ -28,14 +28,10 @@ contract Royalties is Ownable {
     uint256 public currentWindow;
     address public tokenAddress;
     uint256[] public balanceForWindow;
-    uint256 internal previousTotalBalance;
+    uint256 internal totalClaimableBalance;
     mapping(bytes32 => bool) internal claimed;
-    uint256 public feePercent;
-    uint256 public feesEarned;
 
     uint256 public constant PERCENTAGE_SCALE = 10e5;
-    
-    uint256 public SCALED_FEE_PERCENTAGE = feePercent * PERCENTAGE_SCALE;
 
     // The TransferToken event is emitted after each transfer.
     event TransferToken(
@@ -45,49 +41,11 @@ contract Royalties is Ownable {
     );
 
     // Emits when a window is incremented.
-    event WindowIncremented(uint256 currentWindow, uint256 fundsAvailable, uint256 fee);
+    event WindowIncremented(uint256 currentWindow, uint256 fundsAvailable);
 
-    constructor(address tokenAddress_, uint256 feePercent_) {
+    constructor(address tokenAddress_) {
         tokenAddress = tokenAddress_;
-        feePercent = feePercent_;
-        previousTotalBalance = 0;
-        feesEarned = 0;
     }
-
-    // this isn't very useful now --
-    // since we would have to include a merkleProof for every window being claimed,
-    // it would be mostly equivalent to repeated calls to claimWindow(), I think
-    /*
-    function claimForAllWindows(
-        address account,
-        uint256 percentageAllocation,
-        bytes32[] calldata merkleProof
-    ) external {
-        // Make sure that the user has this allocation granted.
-        require(
-            verifyProof(
-                merkleProof,
-                merkleRoot,
-                getNode(account, percentageAllocation)
-            ),
-            "Invalid proof"
-        );
-
-        uint256 amount = 0;
-        for (uint256 i = 0; i < currentWindow; i++) {
-            if (!isClaimed(i, account)) {
-                setClaimed(i, account);
-
-                amount += scaleAmountByPercentage(
-                    balanceForWindow[i],
-                    percentageAllocation
-                );
-            }
-        }
-
-        transferToken(account, amount);
-    }
-    */
 
     function getNode(address account, uint256 percentageAllocation)
         private
@@ -145,26 +103,22 @@ contract Royalties is Ownable {
             // The absolute amount that's claimable.
             claimedAmount
         );
-        previousTotalBalance -= claimedAmount;
+
+        totalClaimableBalance -= claimedAmount;
     }
 
     function incrementWindow(bytes32 merkleRoot) public onlyOwner {
         uint256 fundsAvailable;
-        fundsAvailable = IERC20(tokenAddress).balanceOf(address(this)) - previousTotalBalance;
+        fundsAvailable = IERC20(tokenAddress).balanceOf(address(this)) - totalClaimableBalance;
         require(fundsAvailable > 0, "No additional funds for window");
 
-        previousTotalBalance += fundsAvailable;
+        totalClaimableBalance += fundsAvailable;
 
-        // TODO no fee for now
-        uint256 fee = scaleAmountByPercentage(fundsAvailable, SCALED_FEE_PERCENTAGE);
-        feesEarned += fee;
-        uint256 remainder = fundsAvailable - fee;
-
-        balanceForWindow.push(remainder);
+        balanceForWindow.push(fundsAvailable);
         merkleRoots[currentWindow] = merkleRoot;
         currentWindow += 1;
 
-        emit WindowIncremented(currentWindow, remainder, fee);
+        emit WindowIncremented(currentWindow, fundsAvailable);
     }
 
     function isClaimed(uint256 window, address account)
