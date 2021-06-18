@@ -7,9 +7,9 @@ require("@nomiclabs/hardhat-waffle")
 const ROPSTEN_PRIVATE_KEY = 'placeholder'
 
 module.exports = {
-  solidity: "0.8.3",
+  solidity: ["0.8.5", "0.6.8"],
 
-  defaultNetwork: "localhost",
+  // defaultNetwork: "localhost",
   networks: {
     hardhat: {
     },
