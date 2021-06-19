@@ -37,18 +37,21 @@ contract RevShareLicense is License {
         );
     }
 
-    /*
     // Using Zora
     function createAndRegisterNFT(
         IMedia.MediaData calldata data, 
         IMarket.BidShares calldata bidShares,
+        IMedia.EIP712Signature calldata sig,
         address zoraAddress,
         uint256 requiredSharePercentage
     ) external {
-      // how do we get the new token ID from this??
-        IMedia(zoraAddress).mint(data, bidShares);
+        IMedia zoraMedia = IMedia(zoraAddress);
+        uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
+        zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
+        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
+
+        registerNFT(zoraAddress, nftId, requiredSharePercentage);
     }
-    */
 
     event NFTUnregistered(
         address nftAddress, 

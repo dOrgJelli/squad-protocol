@@ -6,38 +6,6 @@ import "./License.sol";
 import "./ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-/* Interfaces needed to mint NFTs on Zora */
-
-interface IMarket {
-    struct D256 {
-        uint256 value;
-    }
-
-    struct BidShares {
-        // % of sale value that goes to the _previous_ owner of the nft
-        D256 prevOwner;
-        // % of sale value that goes to the original creator of the nft
-        D256 creator;
-        // % of sale value that goes to the seller (current owner) of the nft
-        D256 owner;
-    }
-}
-
-interface IMedia {
-    struct MediaData {
-        // A valid URI of the content represented by this token
-        string tokenURI;
-        // A valid URI of the metadata associated with this token
-        string metadataURI;
-        // A SHA256 hash of the content pointed to by tokenURI
-        bytes32 contentHash;
-        // A SHA256 hash of the content pointed to by metadataURI
-        bytes32 metadataHash;
-    }
-
-    function mint(MediaData calldata data, IMarket.BidShares calldata bidShares) external;
-}
-
 contract PurchasableLicense is License {
     struct LicenseParams {
         uint256 price;
@@ -102,20 +70,23 @@ contract PurchasableLicense is License {
         );
     }
 
-    /*
+    
     // Using Zora
     function createAndRegisterNFT(
         IMedia.MediaData calldata data, 
         IMarket.BidShares calldata bidShares,
+        IMedia.EIP712Signature calldata sig,
         address zoraAddress,
-        uint256 nftId, 
         uint256 price, 
         uint256 sharePercentage
     ) external {
-      // how do we get the new token ID from this??
-        IMedia(zoraAddress).mint(data, bidShares);
+        IMedia zoraMedia = IMedia(zoraAddress);
+        uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
+        zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
+        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
+
+        registerNFT(zoraAddress, nftId, price, sharePercentage);
     }
-    */
 
     event NFTUnregistered(
       address nftAddress,
