@@ -48,7 +48,7 @@ contract RevShareLicense is License {
         IMedia zoraMedia = IMedia(zoraAddress);
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
-        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
+        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned + 1);
 
         registerNFT(zoraAddress, nftId, requiredSharePercentage);
     }
