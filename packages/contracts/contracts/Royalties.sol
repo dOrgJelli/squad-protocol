@@ -28,7 +28,7 @@ contract Royalties is Ownable {
     uint256 public currentWindow;
     address public tokenAddress;
     uint256[] public balanceForWindow;
-    uint256 internal totalClaimableBalance;
+    uint256 public totalClaimableBalance;
     mapping(bytes32 => bool) internal claimed;
 
     uint256 public constant PERCENTAGE_SCALE = 10e5;
@@ -41,7 +41,12 @@ contract Royalties is Ownable {
     );
 
     // Emits when a window is incremented.
-    event WindowIncremented(uint256 currentWindow, uint256 fundsAvailable);
+    event WindowIncremented(
+        uint256 currentWindow, 
+        uint256 fundsAvailable,
+        uint256 totalClaimableBalance,
+        bytes32 merkleRoot
+    );
 
     constructor(address tokenAddress_) {
         tokenAddress = tokenAddress_;
@@ -62,7 +67,7 @@ contract Royalties is Ownable {
     {
         /*
             Example:
-                If there is 100 ETH in the account, and someone has 
+                If there is 100 WETH in the account, and someone has 
                 an allocation of 2%, we call this with 100 as the amount, and 200
                 as the scaled percent.
                 To find out the amount we use, for example: (100 * 200) / (100 * 100)
@@ -77,7 +82,7 @@ contract Royalties is Ownable {
         uint256 scaledPercentageAllocation,
         bytes32[] calldata merkleProof
     ) external {
-        require(currentWindow > window, "cannot claim for a future window");
+        require(currentWindow > window, "Cannot claim for a future window");
         require(
             !isClaimed(window, account),
             "Account already claimed the given window"
@@ -115,10 +120,15 @@ contract Royalties is Ownable {
         totalClaimableBalance += fundsAvailable;
 
         balanceForWindow.push(fundsAvailable);
-        merkleRoots[currentWindow] = merkleRoot;
+        merkleRoots.push(merkleRoot);
         currentWindow += 1;
 
-        emit WindowIncremented(currentWindow, fundsAvailable);
+        emit WindowIncremented(
+            currentWindow, 
+            balanceForWindow[currentWindow - 1], 
+            totalClaimableBalance, 
+            merkleRoots[currentWindow - 1]
+        );
     }
 
     function isClaimed(uint256 window, address account)

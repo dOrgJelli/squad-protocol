@@ -7,5 +7,7 @@
   "author": "Ezra Weller <ezra.weller@gmail.com>",
   "license": "MIT",
   "private": true,
-  "workspaces": ["packages/*"]
+  "workspaces": [
+    "packages/*"
+  ]
 }

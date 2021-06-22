@@ -1,7 +1,8 @@
-const { assert } = require('chai')
+import { ethers } from 'hardhat'
+import { assert } from 'chai'
 
 describe('ERC20Mintable', () => {
-    let alice, erc20Mintable, erc20MintableAlice
+    let alice: string, erc20Mintable, erc20MintableAlice
 
     beforeEach(async () => {
         const wallets = await ethers.getSigners()

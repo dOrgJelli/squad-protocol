@@ -34,12 +34,24 @@ export default class BalanceTree {
     );
   }
 
+  public getRoot(): Buffer {
+    return this.tree.getRoot();
+  }
+
   public getHexRoot(): string {
     return this.tree.getHexRoot();
   }
 
-  // returns the hex bytes32 values of the proof
+  // returns the Buffer values of the proof
   public getProof(
+    account: string,
+    allocation: BigNumber
+  ): Buffer[] {
+    return this.tree.getProof(BalanceTree.toNode(account, allocation));
+  }
+
+  // returns the hex bytes32 values of the proof
+  public getHexProof(
     account: string,
     allocation: BigNumber
   ): string[] {
