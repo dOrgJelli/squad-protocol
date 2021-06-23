@@ -7,6 +7,8 @@ import "./License.sol";
 contract RevShareLicense is License {
     mapping(address => mapping(uint256 => uint256)) public registeredNFTs;
 
+    string public constant NAME = "RevShareLicense";
+
     constructor(string memory description_) License(description_) {}
 
     event NFTRegistered(
