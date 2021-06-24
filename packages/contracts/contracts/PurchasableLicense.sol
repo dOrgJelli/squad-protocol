@@ -21,9 +21,10 @@ contract PurchasableLicense is License {
 
     constructor(
         string memory description_, 
+        address zoraAddress,
         address purchaseTokenAddress,
         address royaltiesAddress_
-    ) License(description_) {
+    ) License(description_, zoraAddress) {
         purchaseToken = ERC20(purchaseTokenAddress);
         royaltiesAddress = royaltiesAddress_;
     }
@@ -45,10 +46,7 @@ contract PurchasableLicense is License {
         public 
         onlyNFTOwner(nftAddress, nftId)
     {
-        require(
-            0 <= sharePercentage && sharePercentage <= 100, 
-            "sharePercentage less than 0 or greater than 100."
-        );
+        require(sharePercentage <= 100, "sharePercentage greater than 100.");
 
         ERC721 nft = ERC721(nftAddress);
         string memory name = string(abi.encodePacked(NAME, nft.name(), nftId));
@@ -56,7 +54,7 @@ contract PurchasableLicense is License {
         ERC20Mintable licenseToken = new ERC20Mintable(name, symbol);
         
         registeredNFTs[nftAddress][nftId] = LicenseParams(
-            price,
+            price * 1 ether,
             sharePercentage,
             licenseToken
         );
@@ -76,16 +74,14 @@ contract PurchasableLicense is License {
         IMedia.MediaData calldata data, 
         IMarket.BidShares calldata bidShares,
         IMedia.EIP712Signature calldata sig,
-        address zoraAddress,
         uint256 price, 
         uint256 sharePercentage
     ) external {
-        IMedia zoraMedia = IMedia(zoraAddress);
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
         uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned + 1);
 
-        registerNFT(zoraAddress, nftId, price, sharePercentage);
+        registerNFT(address(zoraMedia), nftId, price, sharePercentage);
     }
 
     event NFTUnregistered(
@@ -122,8 +118,8 @@ contract PurchasableLicense is License {
         LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
         uint256 purchasePrice = licenseParams.price * numberToBuy;
 
-        require(purchaseToken.transferFrom(purchaser, royaltiesAddress, purchasePrice), "Transfer failed: was the allowance set correctly?");
-        licenseParams.licenseToken.mint(purchaser, numberToBuy);
+        require(purchaseToken.transferFrom(purchaser, royaltiesAddress, purchasePrice), "Transfer failed.");
+        licenseParams.licenseToken.mint(purchaser, numberToBuy * 1 ether);
 
         emit Purchase(
             nftAddress,

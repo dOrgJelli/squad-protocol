@@ -34,8 +34,8 @@ describe('Royalties', () => {
         const balances = []
         for (let i = 0; i <= 4; i++) {
             balances.push({
-              account: await wallets[i].getAddress(),
-              allocation: ethers.BigNumber.from(20 * PERCENTAGE_SCALE)
+                account: await wallets[i].getAddress(),
+                allocation: ethers.BigNumber.from(20 * PERCENTAGE_SCALE)
             })
         }
         return new BalanceTree(balances)
@@ -134,9 +134,9 @@ describe('Royalties', () => {
         ))
             .to.emit(royalties, 'TransferToken')
             .withArgs(
-              aliceAddress,
-              ethers.utils.parseEther(String(aliceAmount)),
-              erc20.address
+                aliceAddress,
+                ethers.utils.parseEther(String(aliceAmount)),
+                erc20.address
             )
         
         const afterClaimable = Number(
@@ -163,7 +163,7 @@ describe('Royalties', () => {
             share,
             proof
         ))
-          .to.be.revertedWith('Cannot claim for a future window')
+            .to.be.revertedWith('Cannot claim for a future window')
     })
 
     it('on claim, fails when called more than once for the same account and window', async () => {
@@ -184,7 +184,7 @@ describe('Royalties', () => {
             share,
             proof
         ))
-          .to.be.revertedWith('Account already claimed the given window')
+            .to.be.revertedWith('Account already claimed the given window')
     })
 
     it('on claim, fails with an incorrect proof, but does not lock out', async () => {
@@ -199,7 +199,7 @@ describe('Royalties', () => {
           share,
           badProof
       ))
-        .to.be.revertedWith('Invalid proof')
+          .to.be.revertedWith('Invalid proof')
       
       await expect(royalties.claim(
           0,
@@ -207,6 +207,6 @@ describe('Royalties', () => {
           share,
           proof
       ))
-        .to.emit(royalties, 'TransferToken')
+          .to.emit(royalties, 'TransferToken')
   })
 })

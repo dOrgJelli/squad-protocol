@@ -59,13 +59,15 @@ contract License {
     // string public fullTextURI;
     // string public fullTextHash;
     string public description;
+    IMedia public zoraMedia;
 
-    constructor(string memory description_) {
+    constructor(string memory description_, address zoraAddress) {
         description = description_;
+        zoraMedia = IMedia(zoraAddress);
     }
 
     modifier onlyNFTOwner(address nftAddress, uint256 nftId) {
-      require(ERC721(nftAddress).ownerOf(nftId) == msg.sender, "Message sender does not own NFT");
+      require(ERC721(nftAddress).ownerOf(nftId) == msg.sender, "Message sender does not own NFT.");
       _;
     }
 }
