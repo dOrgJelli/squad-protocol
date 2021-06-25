@@ -26,10 +26,7 @@ contract RevShareLicense is License {
         public
         onlyNFTOwner(nftAddress, nftId)
     {
-        require(
-            0 <= requiredSharePercentage && requiredSharePercentage <= 100,
-            "sharePercentage less than 0 or greater than 100."
-        );
+        require(requiredSharePercentage <= 100, "sharePercentage greater than 100.");
 
         registeredNFTs[nftAddress][nftId] = requiredSharePercentage;
 

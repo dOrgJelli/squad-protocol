@@ -9,6 +9,7 @@ const zdk = require('@zoralabs/zdk')
  *  - on registerNFT, fails if msg.sender does not own the NFT
  *  - SKIP on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT
  *  - on unregisterNFT, deletes LicenseParams and emits event
+ *  - on unregisterNFT, fails if msg.sender does not own the NFT TODO
  *  - on purchase, transfers tokens, mints license(s), and emits event
  *  - on holdsLicense, returns true if holder has 1+ ether of license token
  *  - on holdsLicense, returns false if holder has <1 ether of license token
@@ -18,7 +19,7 @@ describe('PurchasableLicense', () => {
     /**
      * Before each should:
      *  - prepare accounts, (alice, royalties address)
-     *  - deploy erc20mintable, purchasable license and zora contracts
+     *  - deploy erc20mintable, purchasable license and mock media
      */
 
     let owner, alice 
@@ -57,7 +58,7 @@ describe('PurchasableLicense', () => {
 
         const PurchasableLicense = await ethers.getContractFactory('PurchasableLicense')
         purchasableLicense = await PurchasableLicense.deploy(
-            'Buy usage rights to an NFT for a set price',
+            'Buy usage rights to an NFT for a set price.',
             mockMedia.address,
             erc20.address,
             royaltiesAddress
@@ -195,6 +196,23 @@ describe('PurchasableLicense', () => {
         assert.equal(licenseParams[2], '0x0000000000000000000000000000000000000000')
     })
 
+    it('on unregisterNFT, fails if msg.sender does not own the NFT', async () => {
+        await mintNFT()
+
+        await licenseAlice.registerNFT(
+            mockMedia.address,
+            0,
+            10,
+            50
+        )
+
+        await expect(purchasableLicense.unregisterNFT(
+            mockMedia.address,
+            0
+        ))
+          .to.be.revertedWith('Message sender does not own NFT.')
+    })
+
     it('on purchase, transfers tokens, mints license(s), and emits event', async () => {
         await mintNFT()
 
@@ -233,6 +251,9 @@ describe('PurchasableLicense', () => {
         const licenseToken = erc20.attach(licenseTokenAddress)
         const balance = Number(ethers.utils.formatEther(await licenseToken.balanceOf(ownerAddress)))
         assert.equal(balance, 1)
+
+        const royaltiesBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(royaltiesAddress)))
+        assert.equal(royaltiesBalance, 10)
     })
 
     it('on holdsLicense, returns true if holder has 1+ ether of license token', async () => {
