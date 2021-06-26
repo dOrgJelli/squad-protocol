@@ -2,38 +2,38 @@
 
 pragma solidity 0.8.5;
 
-import "./License.sol";
+import "./LicenseManager.sol";
 
-contract RevShareLicense is License {
-    mapping(address => mapping(uint256 => uint256)) public registeredNFTs;
+contract RevShareLicenseManager is LicenseManager {
+    mapping(address => mapping(uint256 => uint8)) public registeredNFTs;
 
-    string public constant NAME = "RevShareLicense";
+    string public constant NAME = "RevShareLicenseManager";
 
     constructor(string memory description_, address zoraAddress) 
-        License(description_, zoraAddress) {}
+        LicenseManager(description_, zoraAddress) {}
 
     event NFTRegistered(
         address nftAddress, 
         uint256 nftId, 
-        uint256 requiredSharePercentage
+        uint8 minSharePercentage
     );
 
     function registerNFT(
         address nftAddress, 
         uint256 nftId, 
-        uint256 requiredSharePercentage
+        uint8 minSharePercentage
     ) 
         public
         onlyNFTOwner(nftAddress, nftId)
     {
-        require(requiredSharePercentage <= 100, "sharePercentage greater than 100.");
+        require(minSharePercentage <= 100, "sharePercentage greater than 100.");
 
-        registeredNFTs[nftAddress][nftId] = requiredSharePercentage;
+        registeredNFTs[nftAddress][nftId] = minSharePercentage;
 
         emit NFTRegistered(
             nftAddress, 
             nftId, 
-            requiredSharePercentage
+            minSharePercentage
         );
     }
 
@@ -42,13 +42,13 @@ contract RevShareLicense is License {
         IMedia.MediaData calldata data, 
         IMarket.BidShares calldata bidShares,
         IMedia.EIP712Signature calldata sig,
-        uint256 requiredSharePercentage
+        uint8 minSharePercentage
     ) external {
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
         uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned + 1);
 
-        registerNFT(address(zoraMedia), nftId, requiredSharePercentage);
+        registerNFT(address(zoraMedia), nftId, minSharePercentage);
     }
 
     event NFTUnregistered(

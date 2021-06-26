@@ -15,7 +15,7 @@ const zdk = require('@zoralabs/zdk')
  *  - on holdsLicense, returns false if holder has <1 ether of license token
  */
 
-describe('PurchasableLicense', () => {
+describe('PurchasableLicenseManager', () => {
     /**
      * Before each should:
      *  - prepare accounts, (alice, royalties address)
@@ -56,8 +56,8 @@ describe('PurchasableLicense', () => {
         const ERC20Mintable = await ethers.getContractFactory('ERC20Mintable')
         erc20 = await ERC20Mintable.deploy('Fake DAI', 'fDAI')
 
-        const PurchasableLicense = await ethers.getContractFactory('PurchasableLicense')
-        purchasableLicense = await PurchasableLicense.deploy(
+        const PurchasableLicenseManager = await ethers.getContractFactory('PurchasableLicenseManager')
+        purchasableLicense = await PurchasableLicenseManager.deploy(
             'Buy usage rights to an NFT for a set price.',
             mockMedia.address,
             erc20.address,

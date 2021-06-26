@@ -12,7 +12,7 @@ const zdk = require('@zoralabs/zdk')
  *  - on unregisterNFT, fails if msg.sender does not own the NFT
  */
 
-describe('RevShareLicense', () => {
+describe('RevShareLicenseManager', () => {
   /**
    * Before each should:
    *  - prepare accounts (owner, alice)
@@ -47,8 +47,8 @@ describe('RevShareLicense', () => {
       const MockMedia = await ethers.getContractFactory('MockMedia')
       mockMedia = await MockMedia.deploy()
 
-      const RevShareLicense = await ethers.getContractFactory('RevShareLicense')
-      revShareLicense = await RevShareLicense.deploy(
+      const RevShareLicenseManager = await ethers.getContractFactory('RevShareLicenseManager')
+      revShareLicense = await RevShareLicenseManager.deploy(
           'Commercial works derivative of works registered must share a percentage of revenue.',
           mockMedia.address
       )

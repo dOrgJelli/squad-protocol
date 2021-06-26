@@ -2,14 +2,14 @@
 
 pragma solidity 0.8.5;
 
-import "./License.sol";
+import "./LicenseManager.sol";
 import "./ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract PurchasableLicense is License {
+contract PurchasableLicenseManager is LicenseManager {
     struct LicenseParams {
         uint256 price;
-        uint256 sharePercentage;
+        uint8 sharePercentage;
         ERC20Mintable licenseToken;
     }
 
@@ -17,14 +17,14 @@ contract PurchasableLicense is License {
     ERC20 public purchaseToken;
     address public royaltiesAddress;
 
-    string public constant NAME = "PurchasableLicense";
+    string public constant NAME = "PurchasableLicenseManager";
 
     constructor(
         string memory description_, 
         address zoraAddress,
         address purchaseTokenAddress,
         address royaltiesAddress_
-    ) License(description_, zoraAddress) {
+    ) LicenseManager(description_, zoraAddress) {
         purchaseToken = ERC20(purchaseTokenAddress);
         royaltiesAddress = royaltiesAddress_;
     }
@@ -33,7 +33,7 @@ contract PurchasableLicense is License {
         address nftAddress, 
         uint256 nftId, 
         uint256 price, 
-        uint256 sharePercentage,
+        uint8 sharePercentage,
         address licenseTokenAddress
     );
 
@@ -41,7 +41,7 @@ contract PurchasableLicense is License {
         address nftAddress, 
         uint256 nftId, 
         uint256 price, 
-        uint256 sharePercentage
+        uint8 sharePercentage
     ) 
         public 
         onlyNFTOwner(nftAddress, nftId)
@@ -75,7 +75,7 @@ contract PurchasableLicense is License {
         IMarket.BidShares calldata bidShares,
         IMedia.EIP712Signature calldata sig,
         uint256 price, 
-        uint256 sharePercentage
+        uint8 sharePercentage
     ) external {
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);

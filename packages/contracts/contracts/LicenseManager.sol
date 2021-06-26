@@ -55,7 +55,7 @@ interface IMedia {
     function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256 tokenId);
 }
 
-contract License {
+contract LicenseManager {
     // string public fullTextURI;
     // string public fullTextHash;
     string public description;
