@@ -6,4 +6,7 @@ packages/contracts/artifacts
 packages/contracts/artifacts/*
 packages/contracts/cache
 
+packages/subgraph/build
+packages/subgraph/generated
+
 yarn-error.log
