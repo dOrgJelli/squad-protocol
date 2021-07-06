@@ -78,7 +78,7 @@ describe('RevShareLicenseManager', () => {
           0,
           101
       ))
-          .to.be.revertedWith('sharePercentage greater than 100.')
+          .to.be.revertedWith('minSharePercentage greater than 100.')
   })
 
   it('on registerNFT, fails if msg.sender does not own the NFT', async () => {

@@ -15,6 +15,7 @@ contract RevShareLicenseManager is LicenseManager {
     event NFTRegistered(
         address nftAddress, 
         uint256 nftId, 
+        address owner,
         uint8 minSharePercentage
     );
 
@@ -26,13 +27,14 @@ contract RevShareLicenseManager is LicenseManager {
         public
         onlyNFTOwner(nftAddress, nftId)
     {
-        require(minSharePercentage <= 100, "sharePercentage greater than 100.");
+        require(minSharePercentage <= 100, "minSharePercentage greater than 100.");
 
         registeredNFTs[nftAddress][nftId] = minSharePercentage;
 
         emit NFTRegistered(
             nftAddress, 
             nftId, 
+            msg.sender,
             minSharePercentage
         );
     }

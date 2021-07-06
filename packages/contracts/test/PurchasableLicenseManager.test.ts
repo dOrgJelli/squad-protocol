@@ -245,6 +245,7 @@ describe('PurchasableLicenseManager', () => {
                 ethers.BigNumber.from(0), 
                 ownerAddress, 
                 1,
+                ethers.utils.parseEther('10'),
                 licenseTokenAddress
             )
 

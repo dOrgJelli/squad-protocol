@@ -135,8 +135,7 @@ describe('Royalties', () => {
             .to.emit(royalties, 'TransferToken')
             .withArgs(
                 aliceAddress,
-                ethers.utils.parseEther(String(aliceAmount)),
-                erc20.address
+                ethers.utils.parseEther(String(aliceAmount))
             )
         
         const afterClaimable = Number(

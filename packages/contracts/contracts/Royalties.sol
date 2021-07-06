@@ -36,8 +36,7 @@ contract Royalties is Ownable {
     // The TransferToken event is emitted after each transfer.
     event TransferToken(
         address account,
-        uint256 amount,
-        address token
+        uint256 amount
     );
 
     // Emits when a window is incremented.
@@ -156,7 +155,7 @@ contract Royalties is Ownable {
     // Transfer the reserve token
     function transferToken(address to, uint256 value) private {
         IERC20(tokenAddress).transfer(to, value);
-        emit TransferToken(to, value, tokenAddress);
+        emit TransferToken(to, value);
     }
 
     // From https://github.com/protofire/zeppelin-solidity/blob/master/contracts/MerkleProof.sol

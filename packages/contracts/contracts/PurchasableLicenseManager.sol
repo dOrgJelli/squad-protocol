@@ -32,6 +32,7 @@ contract PurchasableLicenseManager is LicenseManager {
     event NFTRegistered(
         address nftAddress, 
         uint256 nftId, 
+        address owner,
         uint256 price, 
         uint8 sharePercentage,
         address licenseTokenAddress
@@ -62,6 +63,7 @@ contract PurchasableLicenseManager is LicenseManager {
         emit NFTRegistered(
             nftAddress,
             nftId,
+            msg.sender,
             price,
             sharePercentage,
             address(licenseToken)
@@ -106,6 +108,7 @@ contract PurchasableLicenseManager is LicenseManager {
         uint256 nftId, 
         address purchaser, 
         uint256 licensesBought,
+        uint256 price,
         address licenseTokenAddress
     );
 
@@ -126,6 +129,7 @@ contract PurchasableLicenseManager is LicenseManager {
             nftId,
             purchaser,
             numberToBuy,
+            purchasePrice,
             address(licenseParams.licenseToken)
         );
     }
