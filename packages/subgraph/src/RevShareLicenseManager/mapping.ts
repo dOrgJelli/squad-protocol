@@ -8,9 +8,10 @@ export function handleNFTRegistered(event: NFTRegistered): void {
   let content = Content.load(contentId)
   if (content == null) {
     content = new Content(contentId)
+    content.nftAddress = event.params.nftAddress
+    content.nftId = event.params.nftId
+    content.licenses = []
   }
-  content.nftAddress = event.params.nftAddress
-  content.nftId = event.params.nftId
   // if this content already has a license registered w/ this manager, load it and replace the values
   let index = content.licenses.findIndex((id): boolean => {
     return Address.fromString(id.split('-')[1]) == event.address

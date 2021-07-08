@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./test",
+    "resolveJsonModule": true
+  },
+  "include": ["test/*"],
+  "exclude": ["node_modules", "src", "build", "generated"]
+}
