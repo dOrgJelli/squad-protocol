@@ -2,42 +2,44 @@ type Content @entity {
   id: ID!
   nftAddress: Bytes!
   nftId: BigInt!
-  licenses: [License!]!
+  purchasableLicenses: [PurchasableLicense!]! @derivedFrom(field: "content")
+  revShareLicenses: [RevShareLicense!]! @derivedFrom(field: "content")
 }
 
 interface License {
   id: ID!
   licenseManagerAddress: Bytes!
   content: Content!
-  contentOwnerWhenRegistered: Bytes!
+  registrant: Bytes!
 }
 
 type PurchasableLicense implements License @entity {
   id: ID!
   licenseManagerAddress: Bytes!
   content: Content!
-  contentOwnerWhenRegistered: Bytes!
+  registrant: Bytes!
   price: BigInt!
   sharePercentage: Int!
   licenseTokenAddress: Bytes!
+  purchases: [PurchaseEvent!]! @derivedFrom(field: "license")
+}
+
+type PurchaseEvent @entity {
+  id: ID!
+  license: PurchasableLicense!
+  purchaser: Bytes!
+  licensesBought: BigInt!
+  pricePaid: BigInt!
+  licenseTokenAddress: Bytes!
+  blockNumber: BigInt!
 }
 
 type RevShareLicense implements License @entity {
   id: ID!
   licenseManagerAddress: Bytes!
   content: Content!
-  contentOwnerWhenRegistered: Bytes!
+  registrant: Bytes!
   minSharePercentage: Int!
-}
-
-type PurchaseEvent @entity {
-  id: ID!
-  content: Content!
-  purchaser: Bytes!
-  licensesBought: BigInt!
-  pricePaid: BigInt!
-  licenseTokenAddress: Bytes!
-  blockNumber: BigInt!
 }
 
 type Royalties @entity {
