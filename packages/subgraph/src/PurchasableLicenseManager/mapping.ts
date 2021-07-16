@@ -1,62 +1,50 @@
-import { log, store, Address } from "@graphprotocol/graph-ts"
+import { store, Address, BigInt } from "@graphprotocol/graph-ts"
 import { NFTRegistered, NFTUnregistered, Purchase } 
   from '../../generated/PurchasableLicenseManager/PurchasableLicenseManager'
 import { Content, PurchasableLicense, PurchaseEvent } from '../../generated/schema'
 
+function makeContentId(address: Address, id: BigInt): string {
+  return address.toHex() + '-' + id.toHex()
+}
+
+function makeLicenseId(contentId: string, address: Address): string {
+  return contentId + '-' + address.toHex()
+}
+
 export function handleNFTRegistered(event: NFTRegistered): void {
-  let contentId = event.params.nftAddress.toHex() + '-' + event.params.nftId.toHex()
+  let contentId = makeContentId(event.params.nftAddress, event.params.nftId)
   let content = Content.load(contentId)
   if (content == null) {
     content = new Content(contentId)
     content.nftAddress = event.params.nftAddress
     content.nftId = event.params.nftId
-    content.licenses = []
   }
-  // if this content already has a license registered w/ this manager, load it and replace the values
-  let index = content.licenses.findIndex((id): boolean => {
-    return Address.fromString(id.split('-')[1]) == event.address
-  })
-  let purchasableLicense = new PurchasableLicense(contentId + '-' + event.address.toHex())
-  // otherwise, make a new license
-  if (index == -1) {
+  content.save()
+
+  let licenseId = makeLicenseId(contentId, event.address)
+  let purchasableLicense = PurchasableLicense.load(licenseId)
+  if (purchasableLicense == null) {
+    purchasableLicense = new PurchasableLicense(licenseId)
     purchasableLicense.licenseManagerAddress = event.address
     purchasableLicense.content = contentId
-    content.licenses.push(purchasableLicense.id)
-  } else {
-    purchasableLicense = PurchasableLicense.load(
-      (content.licenses as string[])[index]
-    ) as PurchasableLicense
   }
-  purchasableLicense.contentOwnerWhenRegistered = event.transaction.from
+  purchasableLicense.registrant = event.transaction.from
   purchasableLicense.price = event.params.price
   purchasableLicense.sharePercentage = event.params.sharePercentage
   purchasableLicense.licenseTokenAddress = event.params.licenseTokenAddress
   purchasableLicense.save()
-  content.save()
 }
 
 export function handleNFTUnregistered(event: NFTUnregistered): void {
-  const contentId = `${event.params.nftAddress}-${event.params.nftId}`
-  let content = Content.load(contentId)
-  if (content == null) {
-    return
-  }
-  // if this content already has a license registered w/ this manager, splice it out and remove it
-  let licenses = content.licenses as string[]
-  for (let i = 0; i < licenses.length; i++) {
-    let id = licenses[i]
-    let address = Address.fromString(id.split('-')[1])
-    if (address == event.address) {
-      content.licenses.splice(i, 1)
-      store.remove('PurchasableLicense', id)
-    }
-  }
-  content.save()
+  let contentId = makeContentId(event.params.nftAddress, event.params.nftId)
+  let licenseId = makeLicenseId(contentId, event.address)
+  store.remove('PurchasableLicense', licenseId)
 }
 
 export function handlePurchase(event: Purchase): void {
   let purchaseEvent = new PurchaseEvent(event.transaction.hash.toHex())
-  purchaseEvent.content = `${event.params.nftAddress}-${event.params.nftId}`
+  let contentId = makeContentId(event.params.nftAddress, event.params.nftId)
+  purchaseEvent.license = makeLicenseId(contentId, event.address)
   purchaseEvent.purchaser = event.params.purchaser
   purchaseEvent.licensesBought = event.params.licensesBought
   purchaseEvent.pricePaid = event.params.price
