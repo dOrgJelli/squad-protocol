@@ -48,7 +48,7 @@ contract RevShareLicenseManager is LicenseManager {
     ) external {
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
-        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned + 1);
+        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
 
         registerNFT(address(zoraMedia), nftId, minSharePercentage);
     }

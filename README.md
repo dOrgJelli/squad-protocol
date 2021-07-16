@@ -10,7 +10,7 @@ in `packages/contracts`: `npm run test`
 
 ## subgraph
 
-### Dev set up
+### local setup
 In root:
 `yarn` or `yarn install`
 
@@ -26,3 +26,7 @@ Then, in this package:
 `yarn deploy-local`
 
 ### testing
+prescription:
+- deploy dev subgraph (package: subgraph)
+- run a bunch of local transactions (package: contracts)
+- run subgraph tests

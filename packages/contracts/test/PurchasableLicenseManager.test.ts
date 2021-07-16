@@ -7,6 +7,7 @@ const zdk = require('@zoralabs/zdk')
  *  - on registerNFT, stores new valid LicenseParams and emits event
  *  - on registerNFT, fails if sharePercentage is greater than 100
  *  - on registerNFT, fails if msg.sender does not own the NFT
+ *  - TODO, on registerNFT, replaces an old license for the same NFT
  *  - SKIP on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT
  *  - on unregisterNFT, deletes LicenseParams and emits event
  *  - on unregisterNFT, fails if msg.sender does not own the NFT TODO
@@ -72,7 +73,7 @@ describe('PurchasableLicenseManager', () => {
         await expect(licenseAlice.registerNFT(
             mockMedia.address,
             0,
-            10,
+            ethers.utils.parseEther('10'),
             50
         ))
             .to.emit(purchasableLicense, 'NFTRegistered')
@@ -80,7 +81,7 @@ describe('PurchasableLicenseManager', () => {
         const licenseParams = await purchasableLicense.registeredNFTs(mockMedia.address, 0)
 
         // price
-        assert.equal(Number(ethers.utils.formatEther(licenseParams[0])), 10)
+        assert.equal(Number(licenseParams[0]), Number(ethers.utils.parseEther('10')))
 
         // share percentage
         assert.equal(Number(licenseParams[1]), 50)
@@ -92,6 +93,55 @@ describe('PurchasableLicenseManager', () => {
             Number(balance), 
             0
         )
+    })
+
+    it('on registerNFT, replaces an old license for the same NFT', async () => {
+        await mintNFT()
+
+        await expect(licenseAlice.registerNFT(
+            mockMedia.address,
+            0,
+            ethers.utils.parseEther('10'),
+            50
+        ))
+            .to.emit(purchasableLicense, 'NFTRegistered')
+            .withArgs(
+                mockMedia.address,
+                0,
+                await alice.getAddress(),
+                ethers.utils.parseEther('10'),
+                ethers.BigNumber.from(50),
+                '0x9bd03768a7DCc129555dE410FF8E85528A4F88b5'
+            )
+
+        const firstLicenseParams = await purchasableLicense.registeredNFTs(mockMedia.address, 0)
+
+        await expect(licenseAlice.registerNFT(
+            mockMedia.address,
+            0,
+            ethers.utils.parseEther('11'),
+            51
+        ))
+            .to.emit(purchasableLicense, 'NFTRegistered')
+            .withArgs(
+              mockMedia.address,
+              0,
+              await alice.getAddress(),
+              ethers.utils.parseEther('11'),
+              ethers.BigNumber.from(51),
+              '0x440C0fCDC317D69606eabc35C0F676D1a8251Ee1'
+          )
+          
+        const licenseParams = await purchasableLicense.registeredNFTs(mockMedia.address, 0)
+
+        // price
+        assert.equal(Number(licenseParams[0]), Number(ethers.utils.parseEther('11')))
+
+        // share percentage
+        assert.equal(Number(licenseParams[1]), 51)
+
+        // license token
+        assert.notEqual(licenseParams[2], firstLicenseParams[2])
     })
 
     it('on registerNFT, fails if sharePercentage is greater than 100', async () => {
@@ -219,7 +269,7 @@ describe('PurchasableLicenseManager', () => {
         await licenseAlice.registerNFT(
             mockMedia.address,
             0,
-            10,
+            ethers.utils.parseEther('10'),
             50
         )
 

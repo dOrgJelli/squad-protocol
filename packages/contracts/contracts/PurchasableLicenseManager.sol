@@ -55,7 +55,7 @@ contract PurchasableLicenseManager is LicenseManager {
         ERC20Mintable licenseToken = new ERC20Mintable(name, symbol);
         
         registeredNFTs[nftAddress][nftId] = LicenseParams(
-            price * 1 ether,
+            price,
             sharePercentage,
             licenseToken
         );
@@ -81,7 +81,7 @@ contract PurchasableLicenseManager is LicenseManager {
     ) external {
         uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
         zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
-        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned + 1);
+        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
 
         registerNFT(address(zoraMedia), nftId, price, sharePercentage);
     }
