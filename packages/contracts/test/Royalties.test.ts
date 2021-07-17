@@ -107,7 +107,7 @@ describe('Royalties', () => {
                 hexRoot
             )
     })
-
+    // TODO TransferToken event now also includes totalClaimableBalance field
     it('on claim, transfers tokens, emits event, and updates state properly', async () => {
         const aliceAddress = await alice.getAddress()
         const share: number = 20 * PERCENTAGE_SCALE
@@ -125,6 +125,8 @@ describe('Royalties', () => {
 
         assert.isFalse(isClaimedBefore)
 
+        const predictedAmount = beforeClaimable - aliceAmount
+
         // claim
         await expect(royalties.claim(
             0,
@@ -135,7 +137,8 @@ describe('Royalties', () => {
             .to.emit(royalties, 'TransferToken')
             .withArgs(
                 aliceAddress,
-                ethers.utils.parseEther(String(aliceAmount))
+                ethers.utils.parseEther(String(aliceAmount)),
+                ethers.utils.parseEther(predictedAmount.toString())
             )
         
         const afterClaimable = Number(
@@ -146,7 +149,7 @@ describe('Royalties', () => {
         )
         const isClaimedAfter = await royalties.isClaimed(0, aliceAddress)
 
-        assert.equal(beforeClaimable - aliceAmount, afterClaimable)
+        assert.equal(predictedAmount, afterClaimable)
         assert.equal(beforeAliceBalance + aliceAmount, afterAliceBalance)
         assert.isTrue(isClaimedAfter)
     })

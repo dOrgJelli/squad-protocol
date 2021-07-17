@@ -64,7 +64,6 @@ dataSources:
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Royalties
         - Window
         - Transfer
       abis:
@@ -73,6 +72,6 @@ dataSources:
       eventHandlers:
         - event: WindowIncremented(uint256,uint256,uint256,bytes32)
           handler: handleWindowIncremented
-        - event: TransferToken(address,uint256)
+        - event: TransferToken(address,uint256,uint256)
           handler: handleTransferToken
       file: ./src/Royalties/mapping.ts

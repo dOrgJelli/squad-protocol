@@ -36,7 +36,8 @@ contract Royalties is Ownable {
     // The TransferToken event is emitted after each transfer.
     event TransferToken(
         address account,
-        uint256 amount
+        uint256 amount,
+        uint256 totalClaimableBalance
     );
 
     // Emits when a window is incremented.
@@ -107,8 +108,6 @@ contract Royalties is Ownable {
             // The absolute amount that's claimable.
             claimedAmount
         );
-
-        totalClaimableBalance -= claimedAmount;
     }
 
     function incrementWindow(bytes32 merkleRoot) public onlyOwner {
@@ -153,9 +152,10 @@ contract Royalties is Ownable {
     }
 
     // Transfer the reserve token
-    function transferToken(address to, uint256 value) private {
-        IERC20(tokenAddress).transfer(to, value);
-        emit TransferToken(to, value);
+    function transferToken(address to, uint256 amount) private {
+        IERC20(tokenAddress).transfer(to, amount);
+        totalClaimableBalance -= amount;
+        emit TransferToken(to, amount, totalClaimableBalance);
     }
 
     // From https://github.com/protofire/zeppelin-solidity/blob/master/contracts/MerkleProof.sol
