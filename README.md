@@ -6,7 +6,12 @@ in root: `yarn`
 
 ## contracts
 ### testing
-in `packages/contracts`: `yarn test`
+in `packages/eth`: `yarn test`
+
+### deploying
+in `packages/eth`:
+1. If deploying locally, in tab 1: `npx hardat node`
+2. In tab 2: `PK={your_private_key} NETWORK={network} yarn deploy`. Leaving PK and network blank defaults to local PK and network. Other options: homestead (mainnet), ropsten, rinkeby, etc.
 
 ## subgraph
 
@@ -16,10 +21,11 @@ In root:
 
 Processes you must have running:
 - hardhat local network node
-- contracts deployed to hardhat node
+- contracts deployed to hardhat node (using `yarn deploy` script)
 - graph-node docker-compose-up
 
 Then, in this package:
+`yarn prepare-local`
 `yarn codegen`
 `yarn build`
 `yarn create-local`

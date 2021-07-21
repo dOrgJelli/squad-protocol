@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "./lib",
-    "rootDir": "./test",
+    "strict": true,
+    "outDir": "./dist",
     "resolveJsonModule": true
   },
   "include": ["test/*"],

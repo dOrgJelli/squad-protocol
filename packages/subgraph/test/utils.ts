@@ -1,20 +1,21 @@
 import { ethers } from 'ethers'
 import axios from 'axios'
-import BalanceTree from '../../contracts/scripts/lib/balance-tree'
+import BalanceTree from '../../eth/lib/balance-tree'
 
-const PurchasableLicenseManagerAbi = require('../abis/PurchasableLicenseManager.json')
-const RevShareLicenseManagerAbi = require('../abis/RevShareLicenseManager.json')
-const MockMediaAbi = require('../abis/MockMedia.json')
-const ERC20Abi = require('../abis/ERC20Mintable.json')
-const RoyaltiesAbi = require('../abis/Royalties.json')
+const PurchasableLicenseManagerAbi = require('../../eth/abis/PurchasableLicenseManager.json')
+const RevShareLicenseManagerAbi = require('../../eth/abis/RevShareLicenseManager.json')
+const SquadNFTAbi = require('../../eth/abis/ERC721Squad.json')
+const ERC20Abi = require('../../eth/abis/ERC20Mintable.json')
+const RoyaltiesAbi = require('../../eth/abis/Royalties.json')
+const addresses = require('../../eth/addresses.json')
 
 const APIURL = 'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
 const ALICE_PK = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
-const MEDIA_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'.toLowerCase()
-const FDAI_ADDR = '0x5FbDB2315678afecb367f032d93F642f64180aa3'.toLowerCase()
-const ROYALTIES_ADDR = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'.toLowerCase()
-export const PURCHASABLE_LM_ADDR = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'.toLowerCase()
-export const REV_SHARE_LM_ADDR = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'.toLowerCase()
+const SQUAD_NFT_ADDR = addresses.local.ERC721Squad.toLowerCase()
+const FDAI_ADDR = addresses.local.ERC20Mintable.toLowerCase()
+const ROYALTIES_ADDR = addresses.local.Royalties.toLowerCase()
+export const PURCHASABLE_LM_ADDR = addresses.local.PurchasableLicenseManager.toLowerCase()
+export const REV_SHARE_LM_ADDR = addresses.local.RevShareLicenseManager.toLowerCase()
 export const DEF_PRICE = ethers.utils.parseEther('10')
 export const DEF_SHARE = 50
 
@@ -23,9 +24,9 @@ export const alice = new ethers.Wallet(
   ALICE_PK, 
   provider
 )
-const mockMedia = new ethers.Contract(
-  MEDIA_ADDR,
-  MockMediaAbi,
+const squadNft = new ethers.Contract(
+  SQUAD_NFT_ADDR,
+  SquadNFTAbi,
   provider
 )
 const royalties = new ethers.Contract(
@@ -51,39 +52,39 @@ const fDai = new ethers.Contract(
 const aliceRoyalties = royalties.connect(alice)
 const alicePlm = purchasableLicenseManager.connect(alice)
 const aliceRslm = revShareLicenseManager.connect(alice)
-const aliceMedia = mockMedia.connect(alice)
+const aliceNft = squadNft.connect(alice)
 const aliceFDai = fDai.connect(alice)
 
-const mediaData = {
-  tokenURI: 'example1.com',
-  metadataURI: 'example2.com',
-  contentHash: ethers.utils.keccak256('0x123456'),
-  metadataHash: ethers.utils.keccak256('0x123467')
+interface TokenData {
+  contentURI: string,
+  metadataURI: string
 }
 
-const bidShares = {
-  creator: { value: ethers.BigNumber.from('10') }, 
-  owner: { value: ethers.BigNumber.from('70') }, 
-  prevOwner: { value: ethers.BigNumber.from('20') }
+export const defTokenData: TokenData = {
+  contentURI: 'example1.com',
+  metadataURI: 'example2.com'
 }
 
 export interface NFT {
   address: string,
-  id: ethers.BigNumber
+  id: ethers.BigNumber,
+  blockCreated: number
 }
 
 export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function mint(): Promise<NFT> {
-  const balance = Number(await aliceMedia.balanceOf(alice.address))
-  await aliceMedia.mint(mediaData, bidShares)
-  const nftId = await aliceMedia.tokenOfOwnerByIndex(alice.address, balance)
-  return {
-    address: mockMedia.address.toLowerCase(), 
-    id: nftId
+export async function mint(): Promise<NFT> {
+  const id = await aliceNft.nextTokenId()
+  const tx = await aliceNft.mint(alice.address, defTokenData)
+  const res = await tx.wait()
+  const nft: NFT = {
+    address: squadNft.address.toLowerCase(), 
+    id: id,
+    blockCreated: res.blockNumber
   }
+  return nft
 }
 
 export async function registerPL(nft: NFT, price: ethers.BigNumber, share: number) {
@@ -118,7 +119,6 @@ export async function mintAndRegisterRSL(): Promise<NFT> {
   return nft
 }
 
-// TODO typechain stuff...
 export async function getPurchasableLicense(nft: NFT): Promise<any> {
   return await purchasableLicenseManager.registeredNFTs(nft.address, nft.id)
 }
@@ -127,11 +127,13 @@ export async function getRevShareLicense(nft: NFT): Promise<any> {
   return await revShareLicenseManager.registeredNFTs(nft.address, nft.id)
 }
 
-export async function mintDaiAndPurchase(nft: NFT, price: ethers.BigNumber) {
+export async function mintDaiAndPurchase(nft: NFT, price: ethers.BigNumber): Promise<number> {
   await aliceFDai.mint(alice.address, price)
   await aliceFDai.approve(purchasableLicenseManager.address, price)
-  await alicePlm.purchase(nft.address, nft.id, alice.address, 1)
+  const tx = await alicePlm.purchase(nft.address, nft.id, alice.address, 1)
+  const res = await tx.wait()
   await delay(5000)
+  return res.blockNumber
 }
 
 const PERCENTAGE_SCALE = 10e5
@@ -150,13 +152,15 @@ const balanceTree: BalanceTree = new BalanceTree(balances)
 export const ROOT = balanceTree.getHexRoot()
 const PROOF = balanceTree.getHexProof(alice.address, ALICE_ALLOC)
 
-export async function mintAndIncrement() {
+export async function mintAndIncrement(): Promise<number> {
   await aliceFDai.mint(ROYALTIES_ADDR, DEF_PRICE)
-  await aliceRoyalties.incrementWindow(ROOT)
+  const tx = await aliceRoyalties.incrementWindow(ROOT)
+  const res = await tx.wait()
   await delay(5000)
+  return res.blockNumber
 }
 
-export async function getBalanceForWindow(index): Promise<number> {
+export async function getBalanceForWindow(index: number): Promise<number> {
   const windowFunds = await royalties.balanceForWindow(index)
   return Number(windowFunds)
 }
@@ -169,15 +173,21 @@ export async function getCurrentWindow(): Promise<number> {
   return Number(await royalties.currentWindow())
 }
 
-export async function claim(windowIndex: number): Promise<ethers.Transaction> {
+interface ClaimRes {
+  tx: ethers.Transaction,
+  res: any
+}
+
+export async function claim(windowIndex: number): Promise<ClaimRes> {
   const tx = await aliceRoyalties.claim(
     windowIndex,
     alice.address,
     Number(ALICE_ALLOC),
     PROOF
   )
+  const res = await tx.wait()
   await delay(5000)
-  return tx
+  return { tx, res }
 }
 
 // GRAPH QUERIES
@@ -192,6 +202,19 @@ export function makeContentId(nft: NFT): string {
 
 export function makeLicenseId(nft: NFT, licenseManagerAddress: string): string {
   return `${makeContentId(nft)}-${licenseManagerAddress.toLowerCase()}`
+}
+
+export async function querySquadNFT(nft: NFT) {
+  const query = `{
+    squadNFT(id: "${Number(nft.id)}") {
+      id
+      creator
+      contentURI
+      metadataURI
+      blockCreated
+    }
+  }`
+  return (await querySubgraph(query)).data.squadNFT
 }
 
 export async function queryContent(nft: NFT) {
@@ -280,7 +303,7 @@ export async function queryPurchases(nft: NFT, licenseManagerAddress: string) {
   return (await querySubgraph(query)).data.purchasableLicense.purchases
 }
 
-export async function queryWindow(id) {
+export async function queryWindow(id: string) {
   const query = `{
     window(id: "${id}") {
       index
@@ -292,7 +315,8 @@ export async function queryWindow(id) {
   return (await querySubgraph(query)).data.window
 }
 
-export async function queryTransfer(hash) {
+export async function queryTransfer(hash: string | undefined) {
+  if (!hash) { throw 'Hash was undefined' }
   const query = `{
     transfer(id: "${hash}") {
       id 

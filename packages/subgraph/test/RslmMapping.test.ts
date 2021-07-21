@@ -6,7 +6,7 @@
  *    - new license replaces the previous one
  * 
  * - on NFTUnregistered
- *    - License is removed from content in subgraph
+ *    - license is removed from content in subgraph
  * 
  */
 

@@ -72,7 +72,7 @@ contract Royalties is Ownable {
                 as the scaled percent.
                 To find out the amount we use, for example: (100 * 200) / (100 * 100)
                 which returns 2 -- i.e. 2% of the 100 ETH balance.
-         */
+        */
         scaledAmount = (amount * scaledPercent) / (100 * PERCENTAGE_SCALE);
     }
 

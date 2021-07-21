@@ -2,9 +2,11 @@ node_modules
 */node_modules
 */*/node_modules
 
-packages/contracts/artifacts
-packages/contracts/artifacts/*
-packages/contracts/cache
+packages/eth/artifacts
+packages/eth/artifacts/*
+packages/eth/cache
+packages/eth/typechain
+packages/eth/typechain/*
 
 packages/subgraph/build
 packages/subgraph/generated

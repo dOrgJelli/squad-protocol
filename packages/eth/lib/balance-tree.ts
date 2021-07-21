@@ -1,3 +1,5 @@
+// From Mirror.xyz
+
 import MerkleTree from "./merkle-tree";
 import { BigNumber, utils } from "ethers";
 

@@ -1,3 +1,11 @@
+type SquadNFT @entity {
+  id: ID!
+  creator: Bytes!
+  contentURI: String!
+  metadataURI: String!
+  blockCreated: BigInt!
+}
+
 type Content @entity {
   id: ID!
   nftAddress: Bytes!

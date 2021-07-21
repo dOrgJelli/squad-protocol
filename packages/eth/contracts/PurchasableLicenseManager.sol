@@ -20,11 +20,11 @@ contract PurchasableLicenseManager is LicenseManager {
     string public constant NAME = "PurchasableLicenseManager";
 
     constructor(
-        string memory description_, 
-        address zoraAddress,
+        string memory description_,
+        address squadNftAddress,
         address purchaseTokenAddress,
         address royaltiesAddress_
-    ) LicenseManager(description_, zoraAddress) {
+    ) LicenseManager(description_, squadNftAddress) {
         purchaseToken = ERC20(purchaseTokenAddress);
         royaltiesAddress = royaltiesAddress_;
     }
@@ -32,7 +32,7 @@ contract PurchasableLicenseManager is LicenseManager {
     event NFTRegistered(
         address nftAddress, 
         uint256 nftId, 
-        address owner,
+        address registrant,
         uint256 price, 
         uint8 sharePercentage,
         address licenseTokenAddress
@@ -43,9 +43,27 @@ contract PurchasableLicenseManager is LicenseManager {
         uint256 nftId, 
         uint256 price, 
         uint8 sharePercentage
-    ) 
-        public 
+    )
+        external
         onlyNFTOwner(nftAddress, nftId)
+    {
+        _registerNFT(
+            nftAddress, 
+            nftId, 
+            msg.sender,
+            price, 
+            sharePercentage
+        );
+    }
+
+    function _registerNFT(
+        address nftAddress, 
+        uint256 nftId, 
+        address registrant,
+        uint256 price, 
+        uint8 sharePercentage
+    ) 
+        internal
     {
         require(sharePercentage <= 100, "sharePercentage greater than 100.");
 
@@ -63,7 +81,7 @@ contract PurchasableLicenseManager is LicenseManager {
         emit NFTRegistered(
             nftAddress,
             nftId,
-            msg.sender,
+            registrant,
             price,
             sharePercentage,
             address(licenseToken)
@@ -71,19 +89,15 @@ contract PurchasableLicenseManager is LicenseManager {
     }
 
     
-    // Using Zora
+    // Using Squad NFT
     function createAndRegisterNFT(
-        IMedia.MediaData calldata data, 
-        IMarket.BidShares calldata bidShares,
-        IMedia.EIP712Signature calldata sig,
+        address creator,
+        IERC721Squad.TokenData calldata data,
         uint256 price, 
         uint8 sharePercentage
     ) external {
-        uint256 nftsOwned = zoraMedia.balanceOf(msg.sender);
-        zoraMedia.mintWithSig(msg.sender, data, bidShares, sig);
-        uint256 nftId = zoraMedia.tokenOfOwnerByIndex(msg.sender, nftsOwned);
-
-        registerNFT(address(zoraMedia), nftId, price, sharePercentage);
+        uint256 nftId = squadNft.mint(creator, data);
+        _registerNFT(address(squadNft), nftId, creator, price, sharePercentage);
     }
 
     event NFTUnregistered(
@@ -92,7 +106,8 @@ contract PurchasableLicenseManager is LicenseManager {
     );
 
     function unregisterNFT(address nftAddress, uint256 nftId) 
-        external 
+        external
+        nftRegistered(nftAddress, nftId)
         onlyNFTOwner(nftAddress, nftId) 
     {
         delete registeredNFTs[nftAddress][nftId];
@@ -117,7 +132,10 @@ contract PurchasableLicenseManager is LicenseManager {
         uint256 nftId, 
         address purchaser, 
         uint256 numberToBuy
-    ) external {
+    ) 
+        external
+        nftRegistered(nftAddress, nftId)
+    {
         LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
         uint256 purchasePrice = licenseParams.price * numberToBuy;
 
@@ -138,7 +156,19 @@ contract PurchasableLicenseManager is LicenseManager {
         address nftAddress, 
         uint256 nftId, 
         address holder
-    ) external view returns(bool) {
-        return (registeredNFTs[nftAddress][nftId].licenseToken.balanceOf(holder) >= 1 ether);
+    ) 
+        external 
+        view
+        nftRegistered(nftAddress, nftId)
+        returns(bool) 
+    {
+        LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
+        return (licenseParams.licenseToken.balanceOf(holder) >= 1 ether);
+    }
+
+    modifier nftRegistered(address nftAddress, uint256 nftId) {
+        LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
+        require(address(licenseParams.licenseToken) != address(0), "NFT not registered.");
+        _;
     }
 }

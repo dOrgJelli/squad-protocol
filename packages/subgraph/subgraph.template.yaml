@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ERC721Squad
-    network: mainnet
+    network: {{network}}
     source:
-      address: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
+      address: '{{erc721SquadAddress}}'
       abi: ERC721Squad
     mapping:
       kind: ethereum/events
@@ -18,16 +18,16 @@ dataSources:
         - SquadNFT
       abis:
         - name: ERC721Squad
-          file: ../eth/abis/ERC721Squad.json
+          file: {{{erc721SquadAbi}}}
       eventHandlers:
         - event: TokenMinted(uint256,address,string,string)
           handler: handleTokenMinted
       file: ./src/ERC721Squad/mapping.ts
   - kind: ethereum/contract
     name: PurchasableLicenseManager
-    network: mainnet
+    network: {{network}}
     source:
-      address: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
+      address: '{{purchasableLicenseManagerAddress}}'
       abi: PurchasableLicenseManager
     mapping:
       kind: ethereum/events
@@ -40,7 +40,7 @@ dataSources:
         - PurchaseEvent
       abis:
         - name: PurchasableLicenseManager
-          file: ../eth/abis/PurchasableLicenseManager.json
+          file: {{{purchasableLicenseManagerAbi}}}
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint256,uint8,address)
           handler: handleNFTRegistered
@@ -51,9 +51,9 @@ dataSources:
       file: ./src/PurchasableLicenseManager/mapping.ts
   - kind: ethereum/contract
     name: RevShareLicenseManager
-    network: mainnet
+    network: {{network}}
     source:
-      address: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
+      address: '{{revShareLicenseManagerAddress}}'
       abi: RevShareLicenseManager
     mapping:
       kind: ethereum/events
@@ -65,7 +65,7 @@ dataSources:
         - RevShareLicense
       abis:
         - name: RevShareLicenseManager
-          file: ../eth/abis/RevShareLicenseManager.json
+          file: {{{revShareLicenseManagerAbi}}}
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint8)
           handler: handleNFTRegistered
@@ -74,9 +74,9 @@ dataSources:
       file: ./src/RevShareLicenseManager/mapping.ts
   - kind: ethereum/contract
     name: Royalties
-    network: mainnet
+    network: {{network}}
     source:
-      address: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+      address: '{{royaltiesAddress}}'
       abi: Royalties
     mapping:
       kind: ethereum/events
@@ -87,7 +87,7 @@ dataSources:
         - Transfer
       abis:
         - name: Royalties
-          file: ../eth/abis/Royalties.json
+          file: {{{royaltiesAbi}}}
       eventHandlers:
         - event: WindowIncremented(uint256,uint256,uint256,bytes32)
           handler: handleWindowIncremented
