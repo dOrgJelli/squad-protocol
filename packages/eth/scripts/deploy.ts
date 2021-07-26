@@ -7,6 +7,7 @@ import { RevShareLicenseManager__factory } from '../typechain/factories/RevShare
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
 
 function getWallet(network: string): ethers.Wallet {
+    console.log('PK', process.env.PK)
     const pk = (process.env.PK ? process.env.PK : "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
     const provider = ethers.getDefaultProvider(network)
     return new ethers.Wallet(pk, provider)

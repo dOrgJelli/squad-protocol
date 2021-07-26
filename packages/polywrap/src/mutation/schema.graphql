@@ -1,0 +1,11 @@
+#import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  mintNFT(
+    connection: Ethereum_Connection
+    contractAddress: String!
+    creatorAddress: String!
+    contentURI: String!
+    metadataURI: String!
+  ): String!
+}

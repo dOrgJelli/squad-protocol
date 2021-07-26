@@ -1,0 +1,16 @@
+[
+  {
+    "api": "ens/testnet/squadprotocol.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "./mint.graphql",
+    "variables": {
+      "network": "testnet",
+      "contractAddress": "$ERC721Squad",
+      "creatorAddress": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "contentURI": "content.com",
+      "metadataURI": "metadata.com"
+    }
+  }
+]

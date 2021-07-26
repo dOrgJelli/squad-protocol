@@ -4,7 +4,7 @@ Monorepo for Squad protocol contracts, subgraph, and APIs
 # dev
 in root: `yarn`
 
-## contracts
+## eth
 ### testing
 in `packages/eth`: `yarn test`
 
@@ -33,3 +33,12 @@ Then, in this package:
 
 ### testing
 After local setup, `yarn test` from the subgraph package.
+
+## polywrap
+
+### testing
+We are not keeping our contracts in this package (they are in the "eth" package), so the testing flow for polywrap will look something like this. In the polywrap package:
+1. `yarn build:web3api` (contracts should be compiled in the `eth` package)
+2. `yarn test:env:up`
+3. `yarn deploy` (will use the `eth` package's deploy script to deploy to polywrap's docker env)
+4. `yarn test`
