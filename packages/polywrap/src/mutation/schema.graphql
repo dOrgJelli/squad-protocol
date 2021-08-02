@@ -7,5 +7,12 @@ type Mutation {
     creatorAddress: String!
     contentURI: String!
     metadataURI: String!
-  ): String!
+  ): Ethereum_TxResponse!
+
+  approve(
+    address: String!
+    connection: Ethereum_Connection
+    spender: String!
+    amount: BigInt!
+  ): Ethereum_TxResponse!
 }
