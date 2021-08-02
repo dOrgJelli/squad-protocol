@@ -41,11 +41,12 @@ contract ERC721Squad is ERC721 {
 
     //======== External Functions ========
 
-    function mint(address creator, TokenData memory data) 
-        external 
-        validTokenData(data)
-        returns(uint256) 
+    function mint(address creator, string memory contentURI, string memory metadataURI)
+        external
+        validTokenData(TokenData(contentURI, metadataURI))
+        returns(uint256)
     {
+        TokenData memory data = TokenData(contentURI, metadataURI);
         require(creator != address(0), "mint: creator is 0 address.");
 
         uint256 tokenId = tokenIdTracker.current();

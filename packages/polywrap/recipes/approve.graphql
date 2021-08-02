@@ -1,0 +1,10 @@
+mutation approve($address: String!, $spender: String!, $amount: BigInt!) {
+  approve(
+    address: $address
+    spender: $spender
+    amount: $amount
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

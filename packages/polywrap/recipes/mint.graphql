@@ -1,9 +1,9 @@
 mutation MintNFT(
-  $contractAddress: String!, 
+  $contractAddress: String!,
   $creatorAddress: String!,
   $contentURI: String!,
   $metadataURI: String!
-) 
+)
 {
   mintNFT(
     connection: {
