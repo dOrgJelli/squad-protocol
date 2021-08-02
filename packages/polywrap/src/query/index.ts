@@ -1,15 +1,27 @@
 import {
   Ethereum_Query,
-  Input_getData
+  Input_balanceOf,
+  Input_allowance
 } from "./w3";
 
-export function getData(input: Input_getData): u32 {
+import { BigInt } from "@web3api/wasm-as"
+
+export function balanceOf(input: Input_balanceOf): BigInt {
   const res = Ethereum_Query.callContractView({
     address: input.address,
-    method: "function get() view returns (uint256)",
-    args: null,
+    method: "function balanceOf(address account) view returns(uint256)",
+    args: [input.account],
     connection: input.connection
-  });
+  })
+  return BigInt.fromString(res)
+}
 
-  return U32.parseInt(res);
+export function allowance(input: Input_allowance): BigInt {
+  const res = Ethereum_Query.callContractView({
+    address: input.address,
+    method: "function allowance(address owner,address spender) view returns(uint256)",
+    args: [input.owner, input.spender],
+    connection: input.connection
+  })
+  return BigInt.fromString(res)
 }
