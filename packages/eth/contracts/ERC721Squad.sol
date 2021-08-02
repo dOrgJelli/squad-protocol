@@ -8,16 +8,23 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract ERC721Squad is ERC721 {
     using Counters for Counters.Counter;
 
+
+    //======== Structs ========
+
     struct TokenData {
-        // A valid URI of the content represented by this token
         string contentURI;
-        // A valid URI of the metadata associated with this token
         string metadataURI;
     }
+
+
+    //======== State ========
 
     Counters.Counter public tokenIdTracker;
     mapping(uint256 => string) public contentURIs;
     mapping(uint256 => string) public metadataURIs;
+
+
+    //======== Events ========
 
     event TokenMinted(
       uint256 tokenId,
@@ -26,9 +33,13 @@ contract ERC721Squad is ERC721 {
       string metadataURI
     );
 
+
+    //======== Constructor ========
+
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
-    // public functions ---------------
+
+    //======== External Functions ========
 
     function mint(address creator, TokenData memory data) 
         external 
@@ -56,14 +67,16 @@ contract ERC721Squad is ERC721 {
       return tokenIdTracker.current();
     }
 
-    // internal functions -------------
+
+    //======== Internal Functions ========
 
     function _setTokenData(uint256 tokenId, TokenData memory data) internal {
         contentURIs[tokenId] = data.contentURI;
         metadataURIs[tokenId] = data.metadataURI;
     }
 
-    // modifiers ----------------------
+
+    //======== Modifiers ========
 
     modifier validTokenData(TokenData memory data) {
         require(bytes(data.contentURI).length != 0, "validTokenData: contentURI is missing.");

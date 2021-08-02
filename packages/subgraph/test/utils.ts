@@ -88,7 +88,7 @@ export async function mint(): Promise<NFT> {
 }
 
 export async function registerPL(nft: NFT, price: ethers.BigNumber, share: number) {
-  await alicePlm.registerNFT(nft.address, nft.id, price, share)
+  await alicePlm.registerNFT(nft.address, nft.id, alice.address, price, share)
 }
 
 export async function unregisterPL(nft: NFT) {
@@ -104,7 +104,7 @@ export async function mintAndRegisterPL(): Promise<NFT> {
 }
 
 export async function registerRSL(nft: NFT, share: number) {
-  await aliceRslm.registerNFT(nft.address, nft.id, share)
+  await aliceRslm.registerNFT(nft.address, nft.id, alice.address, share)
 }
 
 export async function unregisterRSL(nft: NFT) {

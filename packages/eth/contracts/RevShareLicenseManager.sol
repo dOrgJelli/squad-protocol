@@ -5,13 +5,14 @@ pragma solidity 0.8.5;
 import "./LicenseManager.sol";
 
 contract RevShareLicenseManager is LicenseManager {
+    //======== State ========
+
     mapping(address => mapping(uint256 => uint8)) public minSharePercentages;
     mapping(address => mapping(uint256 => bool)) public registeredNFTs;
-
     string public constant NAME = "RevShareLicenseManager";
 
-    constructor(string memory description_, address squadNftAddress) 
-        LicenseManager(description_, squadNftAddress) {}
+
+    //======== Events ========
 
     event NFTRegistered(
         address nftAddress, 
@@ -20,30 +21,29 @@ contract RevShareLicenseManager is LicenseManager {
         uint8 minSharePercentage
     );
 
-    function registerNFT(
+    event NFTUnregistered(
         address nftAddress, 
-        uint256 nftId, 
-        uint8 minSharePercentage
-    )
-        external
-        onlyNFTOwner(nftAddress, nftId)
-    {
-        _registerNFT(
-            nftAddress,
-            nftId,
-            msg.sender,
-            minSharePercentage
-        );
-    }
+        uint256 nftId
+    );
 
-    function _registerNFT(
+
+    //======== Constructor ========
+
+    constructor(string memory description_, address squadNftAddress) 
+        LicenseManager(description_, squadNftAddress) {}
+
+
+    //======== Public Functions ========
+
+    function registerNFT(
         address nftAddress, 
         uint256 nftId, 
         address registrant,
         uint8 minSharePercentage
     ) 
-        internal
+        public
     {
+        require(ERC721(nftAddress).ownerOf(nftId) == registrant, "Registrant does not own NFT.");
         require(minSharePercentage <= 100, "minSharePercentage greater than 100.");
 
         minSharePercentages[nftAddress][nftId] = minSharePercentage;
@@ -57,20 +57,17 @@ contract RevShareLicenseManager is LicenseManager {
         );
     }
 
-    // Using Squad NFT
+
+    //======== External Functions ========
+
     function createAndRegisterNFT(
         address creator,
         IERC721Squad.TokenData calldata data,
         uint8 minSharePercentage
     ) external {
         uint256 nftId = squadNft.mint(creator, data);
-        _registerNFT(address(squadNft), nftId, creator, minSharePercentage);
+        registerNFT(address(squadNft), nftId, creator, minSharePercentage);
     }
-
-    event NFTUnregistered(
-        address nftAddress, 
-        uint256 nftId
-    );
 
     function unregisterNFT(address nftAddress, uint256 nftId) 
         external
@@ -87,6 +84,9 @@ contract RevShareLicenseManager is LicenseManager {
             nftId
         );
     }
+
+
+    //======== Modifiers ========
 
     modifier nftRegistered(address nftAddress, uint256 nftId) {
       require(registeredNFTs[nftAddress][nftId] == true, "NFT not registered.");

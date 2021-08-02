@@ -63,6 +63,7 @@ describe('RevShareLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 20
             ))
                 .to.emit(revShareLicense, 'NFTRegistered')
@@ -79,20 +80,22 @@ describe('RevShareLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 101
             ))
                 .to.be.revertedWith('minSharePercentage greater than 100.')
         })
 
-        it('fails if msg.sender does not own the NFT', async () => {
+        it('fails if registrant does not own the NFT', async () => {
             await mintNFT()
       
             await expect(revShareLicense.registerNFT(
               squadNft.address,
               0,
+              await owner.getAddress(),
               20
           ))
-              .to.be.revertedWith('Message sender does not own NFT.')
+              .to.be.revertedWith('Registrant does not own NFT.')
         })
     })
 
@@ -132,6 +135,7 @@ describe('RevShareLicenseManager', () => {
             await licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 20
             )
 
@@ -161,6 +165,7 @@ describe('RevShareLicenseManager', () => {
             await licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 20
             )
       

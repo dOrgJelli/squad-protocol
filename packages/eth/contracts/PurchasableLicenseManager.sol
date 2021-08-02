@@ -7,17 +7,50 @@ import "./ERC20Mintable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract PurchasableLicenseManager is LicenseManager {
+    //======== Structs ========
+
     struct LicenseParams {
         uint256 price;
         uint8 sharePercentage;
         ERC20Mintable licenseToken;
     }
 
+
+    //======== State ========
+
     mapping(address => mapping(uint256 => LicenseParams)) public registeredNFTs;
     ERC20 public purchaseToken;
     address public royaltiesAddress;
-
     string public constant NAME = "PurchasableLicenseManager";
+
+
+    //======== Events ========
+
+    event NFTRegistered(
+        address nftAddress, 
+        uint256 nftId, 
+        address registrant,
+        uint256 price, 
+        uint8 sharePercentage,
+        address licenseTokenAddress
+    );
+
+    event NFTUnregistered(
+        address nftAddress,
+        uint256 nftId
+    );
+
+    event Purchase(
+        address nftAddress, 
+        uint256 nftId, 
+        address purchaser, 
+        uint256 licensesBought,
+        uint256 price,
+        address licenseTokenAddress
+    );
+
+
+    //======== Constructor ========
 
     constructor(
         string memory description_,
@@ -29,42 +62,19 @@ contract PurchasableLicenseManager is LicenseManager {
         royaltiesAddress = royaltiesAddress_;
     }
 
-    event NFTRegistered(
-        address nftAddress, 
-        uint256 nftId, 
-        address registrant,
-        uint256 price, 
-        uint8 sharePercentage,
-        address licenseTokenAddress
-    );
+
+    //======== Public Functions ========
 
     function registerNFT(
-        address nftAddress, 
-        uint256 nftId, 
-        uint256 price, 
-        uint8 sharePercentage
-    )
-        external
-        onlyNFTOwner(nftAddress, nftId)
-    {
-        _registerNFT(
-            nftAddress, 
-            nftId, 
-            msg.sender,
-            price, 
-            sharePercentage
-        );
-    }
-
-    function _registerNFT(
         address nftAddress, 
         uint256 nftId, 
         address registrant,
         uint256 price, 
         uint8 sharePercentage
     ) 
-        internal
+        public
     {
+        require(ERC721(nftAddress).ownerOf(nftId) == registrant, "Registrant does not own NFT.");
         require(sharePercentage <= 100, "sharePercentage greater than 100.");
 
         ERC721 nft = ERC721(nftAddress);
@@ -88,8 +98,9 @@ contract PurchasableLicenseManager is LicenseManager {
         );
     }
 
-    
-    // Using Squad NFT
+
+    //======== External Functions ========
+
     function createAndRegisterNFT(
         address creator,
         IERC721Squad.TokenData calldata data,
@@ -97,13 +108,8 @@ contract PurchasableLicenseManager is LicenseManager {
         uint8 sharePercentage
     ) external {
         uint256 nftId = squadNft.mint(creator, data);
-        _registerNFT(address(squadNft), nftId, creator, price, sharePercentage);
+        registerNFT(address(squadNft), nftId, creator, price, sharePercentage);
     }
-
-    event NFTUnregistered(
-      address nftAddress,
-      uint256 nftId
-    );
 
     function unregisterNFT(address nftAddress, uint256 nftId) 
         external
@@ -117,15 +123,6 @@ contract PurchasableLicenseManager is LicenseManager {
             nftId
         );
     }
-
-    event Purchase(
-        address nftAddress, 
-        uint256 nftId, 
-        address purchaser, 
-        uint256 licensesBought,
-        uint256 price,
-        address licenseTokenAddress
-    );
 
     function purchase(
         address nftAddress, 
@@ -165,6 +162,9 @@ contract PurchasableLicenseManager is LicenseManager {
         LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];
         return (licenseParams.licenseToken.balanceOf(holder) >= 1 ether);
     }
+
+
+    //======== Modifiers ========
 
     modifier nftRegistered(address nftAddress, uint256 nftId) {
         LicenseParams memory licenseParams = registeredNFTs[nftAddress][nftId];

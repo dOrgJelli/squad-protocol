@@ -2,7 +2,7 @@
  * Tests:
  *  - on registerNFT, stores new valid LicenseParams and emits event
  *  - on registerNFT, fails if sharePercentage is greater than 100
- *  - on registerNFT, fails if msg.sender does not own the NFT
+ *  - on registerNFT, fails if registrant does not own the NFT
  *  - __on registerNFT, fails if NFT does not exist (nevermind, the NFT contract already covers this)
  *  - on registerNFT, replaces an old license for the same NFT
  *  - on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT
@@ -76,6 +76,7 @@ describe('PurchasableLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 ethers.utils.parseEther('10'),
                 50
             ))
@@ -104,6 +105,7 @@ describe('PurchasableLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 ethers.utils.parseEther('10'),
                 50
             ))
@@ -122,6 +124,7 @@ describe('PurchasableLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 ethers.utils.parseEther('11'),
                 51
             ))
@@ -153,22 +156,24 @@ describe('PurchasableLicenseManager', () => {
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 10,
                 101
             ))
                 .to.be.revertedWith('sharePercentage greater than 100.')
         })
 
-        it('fails if msg.sender does not own the NFT', async () => {
+        it('fails if registrant does not own the NFT', async () => {
             await mintNFT()
     
             await expect(purchasableLicense.registerNFT(
                 squadNft.address,
                 0,
+                await owner.getAddress(),
                 10,
                 50
             ))
-                .to.be.revertedWith('Message sender does not own NFT.')
+                .to.be.revertedWith('Registrant does not own NFT.')
         })
     })
 
@@ -211,6 +216,7 @@ describe('PurchasableLicenseManager', () => {
             await licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 10,
                 50
             )
@@ -249,6 +255,7 @@ describe('PurchasableLicenseManager', () => {
         await licenseAlice.registerNFT(
             squadNft.address,
             0,
+            await alice.getAddress(),
             ethers.utils.parseEther('10'),
             50
         )
@@ -294,6 +301,7 @@ describe('PurchasableLicenseManager', () => {
             await licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 10,
                 50
             )
@@ -326,6 +334,7 @@ describe('PurchasableLicenseManager', () => {
             await licenseAlice.registerNFT(
                 squadNft.address,
                 0,
+                await alice.getAddress(),
                 10,
                 50
             )

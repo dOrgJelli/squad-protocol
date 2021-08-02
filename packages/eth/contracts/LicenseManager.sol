@@ -6,9 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 interface IERC721Squad {
     struct TokenData {
-        // A valid URI of the content represented by this token
         string contentURI;
-        // A valid URI of the metadata associated with this token
         string metadataURI;
     }
 
@@ -19,8 +17,8 @@ interface IERC721Squad {
 }
 
 contract LicenseManager {
-    // string public fullTextURI;
-    // string public fullTextHash;
+    // TODO? string public fullTextURI;
+    // TODO? string public fullTextHash;
     string public description;
     IERC721Squad public squadNft;
 

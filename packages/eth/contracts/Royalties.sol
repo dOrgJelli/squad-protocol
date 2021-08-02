@@ -23,7 +23,8 @@ interface IERC20 {
  */
 
 contract Royalties is Ownable {
-    // Storage
+    //======== State ========
+
     bytes32[] public merkleRoots;
     uint256 public currentWindow;
     address public tokenAddress;
@@ -33,14 +34,15 @@ contract Royalties is Ownable {
 
     uint256 public constant PERCENTAGE_SCALE = 10e5;
 
-    // The TransferToken event is emitted after each transfer.
+
+    //======== Events ========
+
     event TransferToken(
         address account,
         uint256 amount,
         uint256 totalClaimableBalance
     );
 
-    // Emits when a window is incremented.
     event WindowIncremented(
         uint256 currentWindow, 
         uint256 fundsAvailable,
@@ -48,33 +50,14 @@ contract Royalties is Ownable {
         bytes32 merkleRoot
     );
 
+
+    //======== Constructor ========
+
     constructor(address tokenAddress_) {
         tokenAddress = tokenAddress_;
     }
 
-    function getNode(address account, uint256 percentageAllocation)
-        private
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(account, percentageAllocation));
-    }
-
-    function scaleAmountByPercentage(uint256 amount, uint256 scaledPercent)
-        public
-        pure
-        returns (uint256 scaledAmount)
-    {
-        /*
-            Example:
-                If there is 100 WETH in the account, and someone has 
-                an allocation of 2%, we call this with 100 as the amount, and 200
-                as the scaled percent.
-                To find out the amount we use, for example: (100 * 200) / (100 * 100)
-                which returns 2 -- i.e. 2% of the 100 ETH balance.
-        */
-        scaledAmount = (amount * scaledPercent) / (100 * PERCENTAGE_SCALE);
-    }
+    //======== External Functions ========
 
     function claim(
         uint256 window,
@@ -110,6 +93,25 @@ contract Royalties is Ownable {
         );
     }
 
+
+    //======== Public Functions ========
+
+    function scaleAmountByPercentage(uint256 amount, uint256 scaledPercent)
+        public
+        pure
+        returns (uint256 scaledAmount)
+    {
+        /*
+            Example:
+                If there are 100 tokens in the account, and someone has 
+                an allocation of 2%, we call this with 100 as the amount, and 200
+                as the scaled percent.
+                To find out the amount we use, for example: (100 * 200) / (100 * 100)
+                which returns 2 -- i.e. 2% of the 100 ETH balance.
+        */
+        scaledAmount = (amount * scaledPercent) / (100 * PERCENTAGE_SCALE);
+    }
+
     function incrementWindow(bytes32 merkleRoot) public onlyOwner {
         uint256 fundsAvailable;
         fundsAvailable = IERC20(tokenAddress).balanceOf(address(this)) - totalClaimableBalance;
@@ -137,7 +139,16 @@ contract Royalties is Ownable {
         return claimed[getClaimHash(window, account)];
     }
 
+
     //======== Private Functions ========
+
+    function getNode(address account, uint256 percentageAllocation)
+        private
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(account, percentageAllocation));
+    }
 
     function setClaimed(uint256 window, address account) private {
         claimed[getClaimHash(window, account)] = true;
@@ -151,7 +162,6 @@ contract Royalties is Ownable {
         return keccak256(abi.encodePacked(window, account));
     }
 
-    // Transfer the reserve token
     function transferToken(address to, uint256 amount) private {
         IERC20(tokenAddress).transfer(to, amount);
         totalClaimableBalance -= amount;
