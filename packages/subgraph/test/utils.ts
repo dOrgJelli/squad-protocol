@@ -1,13 +1,13 @@
 import { ethers } from 'ethers'
 import axios from 'axios'
-import BalanceTree from '../../eth/lib/balance-tree'
+import BalanceTree from '../../hardhat/lib/balance-tree'
 
-const PurchasableLicenseManagerAbi = require('../../eth/abis/PurchasableLicenseManager.json')
-const RevShareLicenseManagerAbi = require('../../eth/abis/RevShareLicenseManager.json')
-const SquadNFTAbi = require('../../eth/abis/ERC721Squad.json')
-const ERC20Abi = require('../../eth/abis/ERC20Mintable.json')
-const RoyaltiesAbi = require('../../eth/abis/Royalties.json')
-const addresses = require('../../eth/addresses.json')
+const PurchasableLicenseManagerAbi = require('../../hardhat/abis/PurchasableLicenseManager.json')
+const RevShareLicenseManagerAbi = require('../../hardhat/abis/RevShareLicenseManager.json')
+const SquadNFTAbi = require('../../hardhat/abis/ERC721Squad.json')
+const ERC20Abi = require('../../hardhat/abis/ERC20Mintable.json')
+const RoyaltiesAbi = require('../../hardhat/abis/Royalties.json')
+const addresses = require('../../hardhat/addresses.json')
 
 const APIURL = 'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
 const ALICE_PK = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
