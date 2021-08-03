@@ -2,18 +2,18 @@ import * as fs from 'fs'
 
 const network = (process.env.NETWORK ? process.env.NETWORK : "local")
 
-const addresses = require('../../eth/addresses.json')
+const addresses = require('../../hardhat/addresses.json')
 
 const configJSON = {
     network: network,
     erc721SquadAddress: addresses[network].ERC721Squad,
-    erc721SquadAbi: "../eth/abis/ERC721Squad.json",
+    erc721SquadAbi: "../hardhat/abis/ERC721Squad.json",
     purchasableLicenseManagerAddress: addresses[network].PurchasableLicenseManager,
-    purchasableLicenseManagerAbi: "../eth/abis/PurchasableLicenseManager.json",
+    purchasableLicenseManagerAbi: "../hardhat/abis/PurchasableLicenseManager.json",
     revShareLicenseManagerAddress: addresses[network].RevShareLicenseManager,
-    revShareLicenseManagerAbi: "../eth/abis/RevShareLicenseManager.json",
+    revShareLicenseManagerAbi: "../hardhat/abis/RevShareLicenseManager.json",
     royaltiesAddress: addresses[network].Royalties,
-    royaltiesAbi: "../eth/abis/Royalties.json"
+    royaltiesAbi: "../hardhat/abis/Royalties.json"
 }
 
 if (network == "local") { configJSON.network = "mainnet" }
