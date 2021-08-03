@@ -1,0 +1,69 @@
+type SquadNFT @entity {
+  id: ID!
+  creator: Bytes!
+  contentURI: String!
+  metadataURI: String!
+  contentHash: Bytes!
+  metadataHash: Bytes!
+  blockCreated: BigInt!
+}
+
+type Content @entity {
+  id: ID!
+  nftAddress: Bytes!
+  nftId: BigInt!
+  purchasableLicenses: [PurchasableLicense!]! @derivedFrom(field: "content")
+  revShareLicenses: [RevShareLicense!]! @derivedFrom(field: "content")
+}
+
+interface License {
+  id: ID!
+  licenseManagerAddress: Bytes!
+  content: Content!
+  registrant: Bytes!
+}
+
+type PurchasableLicense implements License @entity {
+  id: ID!
+  licenseManagerAddress: Bytes!
+  content: Content!
+  registrant: Bytes!
+  price: BigInt!
+  sharePercentage: Int!
+  licenseTokenAddress: Bytes!
+  purchases: [PurchaseEvent!]! @derivedFrom(field: "license")
+}
+
+type PurchaseEvent @entity {
+  id: ID!
+  license: PurchasableLicense!
+  purchaser: Bytes!
+  licensesBought: BigInt!
+  pricePaid: BigInt!
+  licenseTokenAddress: Bytes!
+  blockNumber: BigInt!
+}
+
+type RevShareLicense implements License @entity {
+  id: ID!
+  licenseManagerAddress: Bytes!
+  content: Content!
+  registrant: Bytes!
+  minSharePercentage: Int!
+}
+
+type Window @entity {
+  id: ID!
+  index: BigInt!
+  fundsAvailable: BigInt!
+  merkleRoot: Bytes!
+  blockNumber: BigInt!
+}
+
+type Transfer @entity {
+  id: ID!
+  to: Bytes!
+  amount: BigInt!
+  totalClaimableBalance: BigInt!
+  blockNumber: BigInt!
+}

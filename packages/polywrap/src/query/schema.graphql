@@ -1,0 +1,16 @@
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Query {
+  balanceOf(
+    address: String!
+    connection: Ethereum_Connection!
+    account: String!
+  ): BigInt!
+
+  allowance(
+    address: String!
+    connection: Ethereum_Connection!
+    owner: String!
+    spender: String!
+  ): BigInt!
+}

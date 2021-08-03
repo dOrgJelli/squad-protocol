@@ -1,0 +1,96 @@
+specVersion: 0.0.2
+description: Squad Protocol Subgraph
+repository: https://github.com/SquadGames/squad-protocol/tree/main/packages/subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ERC721Squad
+    network: {{network}}
+    source:
+      address: '{{erc721SquadAddress}}'
+      abi: ERC721Squad
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - SquadNFT
+      abis:
+        - name: ERC721Squad
+          file: {{{erc721SquadAbi}}}
+      eventHandlers:
+        - event: TokenMinted(uint256,address,string,string,bytes32,bytes32)
+          handler: handleTokenMinted
+      file: ./src/ERC721Squad/mapping.ts
+  - kind: ethereum/contract
+    name: PurchasableLicenseManager
+    network: {{network}}
+    source:
+      address: '{{purchasableLicenseManagerAddress}}'
+      abi: PurchasableLicenseManager
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Content
+        - License
+        - PurchasableLicense
+        - PurchaseEvent
+      abis:
+        - name: PurchasableLicenseManager
+          file: {{{purchasableLicenseManagerAbi}}}
+      eventHandlers:
+        - event: NFTRegistered(address,uint256,address,uint256,uint8,address)
+          handler: handleNFTRegistered
+        - event: NFTUnregistered(address,uint256)
+          handler: handleNFTUnregistered
+        - event: Purchase(address,uint256,address,uint256,uint256,address)
+          handler: handlePurchase
+      file: ./src/PurchasableLicenseManager/mapping.ts
+  - kind: ethereum/contract
+    name: RevShareLicenseManager
+    network: {{network}}
+    source:
+      address: '{{revShareLicenseManagerAddress}}'
+      abi: RevShareLicenseManager
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Content
+        - License
+        - RevShareLicense
+      abis:
+        - name: RevShareLicenseManager
+          file: {{{revShareLicenseManagerAbi}}}
+      eventHandlers:
+        - event: NFTRegistered(address,uint256,address,uint8)
+          handler: handleNFTRegistered
+        - event: NFTUnregistered(address,uint256)
+          handler: handleNFTUnregistered
+      file: ./src/RevShareLicenseManager/mapping.ts
+  - kind: ethereum/contract
+    name: Royalties
+    network: {{network}}
+    source:
+      address: '{{royaltiesAddress}}'
+      abi: Royalties
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Window
+        - Transfer
+      abis:
+        - name: Royalties
+          file: {{{royaltiesAbi}}}
+      eventHandlers:
+        - event: WindowIncremented(uint256,uint256,uint256,bytes32)
+          handler: handleWindowIncremented
+        - event: TransferToken(address,uint256,uint256)
+          handler: handleTransferToken
+      file: ./src/Royalties/mapping.ts

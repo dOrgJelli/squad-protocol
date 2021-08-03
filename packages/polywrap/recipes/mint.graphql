@@ -1,0 +1,17 @@
+mutation MintNFT(
+  $contractAddress: String!,
+  $creatorAddress: String!,
+  $contentURI: String!,
+  $metadataURI: String!
+)
+{
+  mintNFT(
+    connection: {
+      networkNameOrChainId: $network
+    }
+    contractAddress: $contractAddress
+    creatorAddress: $creatorAddress
+    contentURI: $contentURI
+    metadataURI: $metadataURI
+  )
+}

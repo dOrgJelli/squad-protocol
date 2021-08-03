@@ -1,0 +1,10 @@
+query allowance($address: String!, $owner: String!, $spender: String!) {
+  allowance(
+    address: $address
+    owner: $owner
+    spender: $spender
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@squad/eth",
+  "version": "0.0.0",
+  "description": "Smart contracts for the Squad protocol",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "ts-node scripts/deploy.ts",
+    "test": "hardhat compile && hardhat test",
+    "test-local": "yarn deploy-local && hardhat --network localhost test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^4.1.0",
+    "@typechain/ethers-v5": "^7.0.1",
+    "@typechain/hardhat": "^2.1.2",
+    "@types/chai": "^4.2.19",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.12.4",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.3.0",
+    "ethereumjs-util": "^7.1.0",
+    "ethers": "^5.1.0",
+    "hardhat": "^2.1.2",
+    "ts-node": "^10.0.0",
+    "typechain": "^5.1.1",
+    "typescript": "^4.3.4"
+  }
+}

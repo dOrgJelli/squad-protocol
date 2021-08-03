@@ -1,0 +1,52 @@
+[
+  {
+    "api": "ens/testnet/squadprotocol.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "./mint.graphql",
+    "variables": {
+      "network": "testnet",
+      "contractAddress": "$ERC721Squad",
+      "creatorAddress": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "contentURI": "content.com",
+      "metadataURI": "metadata.com"
+    }
+  },
+  {
+    "query": "./approve.graphql",
+    "variables": {
+      "address": "$ERC20Mintable",
+      "spender": "$Royalties",
+      "amount": "0",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "./allowance.graphql",
+    "variables": {
+      "network": "testnet",
+      "address": "$ERC20Mintable",
+      "owner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+      "spender": "$Royalties"
+    }
+  },
+  {
+    "query": "./approve.graphql",
+    "variables": {
+      "address": "$ERC20Mintable",
+      "spender": "$Royalties",
+      "amount": "3",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "./allowance.graphql",
+    "variables": {
+      "network": "testnet",
+      "address": "$ERC20Mintable",
+      "owner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+      "spender": "$Royalties"
+    }
+  }
+]
