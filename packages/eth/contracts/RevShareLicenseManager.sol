@@ -62,10 +62,19 @@ contract RevShareLicenseManager is LicenseManager {
 
     function createAndRegisterNFT(
         address creator,
-        IERC721Squad.TokenData calldata data,
+        string calldata contentURI, 
+        string calldata metadataURI,
+        bytes32 contentHash,
+        bytes32 metadataHash,
         uint8 minSharePercentage
     ) external {
-        uint256 nftId = squadNft.mint(creator, data);
+        uint256 nftId = squadNft.mint(
+            creator, 
+            contentURI, 
+            metadataURI,
+            contentHash,
+            metadataHash
+        );
         registerNFT(address(squadNft), nftId, creator, minSharePercentage);
     }
 

@@ -2,7 +2,7 @@
  * Tests
  *  - on registerNFT, stores new valid LicenseParams and emits event
  *  - on registerNFT, fails if sharePercentage is greater than 100
- *  - on registerNFT, fails if msg.sender does not own the NFT
+ *  - on registerNFT, fails if registrant does not own the NFT
  *  - on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT
  *  - on unregisterNFT, deletes LicenseParams and emits event
  *  - on unregisterNFT, fails if NFT is not registered
@@ -30,13 +30,22 @@ describe('RevShareLicenseManager', () => {
     let licenseAlice: RevShareLicenseManager
     let squadNft: ERC721Squad
 
+    const tokenData = {
+        contentURI: 'example.com',
+        metadataURI: 'example2.com',
+        contentHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('contentURI')),
+        metadataHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('metadataURI'))
+    }
+
     async function mintNFT() {
         const nftAlice = squadNft.connect(alice)
-        const tokenData = {
-          contentURI: 'example.com',
-          metadataURI: 'example2.com'
-        }
-        await nftAlice.mint(await alice.getAddress(), tokenData)
+        await nftAlice.mint(
+            await alice.getAddress(), 
+            tokenData.contentURI,
+            tokenData.metadataURI,
+            tokenData.contentHash,
+            tokenData.metadataHash
+        )
     }
 
     beforeEach(async () => {
@@ -102,14 +111,12 @@ describe('RevShareLicenseManager', () => {
     it(
         'on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT', 
         async () => {
-            const tokenData = {
-                contentURI: `https://example1.net/`,
-                metadataURI: `https://example2.net/`
-            }
-
             await expect(revShareLicense.createAndRegisterNFT(
                 await alice.getAddress(),
-                tokenData,
+                tokenData.contentURI,
+                tokenData.metadataURI,
+                tokenData.contentHash,
+                tokenData.metadataHash,
                 50
             ))
                 .to.emit(revShareLicense, 'NFTRegistered')

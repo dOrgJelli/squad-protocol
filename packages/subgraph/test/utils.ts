@@ -57,12 +57,16 @@ const aliceFDai = fDai.connect(alice)
 
 interface TokenData {
   contentURI: string,
-  metadataURI: string
+  metadataURI: string,
+  contentHash: ethers.BytesLike,
+  metadataHash: ethers.BytesLike
 }
 
 export const defTokenData: TokenData = {
   contentURI: 'example1.com',
-  metadataURI: 'example2.com'
+  metadataURI: 'example2.com',
+  contentHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('content')),
+  metadataHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('metadata'))
 }
 
 export interface NFT {
@@ -77,7 +81,13 @@ export function delay(ms: number) {
 
 export async function mint(): Promise<NFT> {
   const id = await aliceNft.nextTokenId()
-  const tx = await aliceNft.mint(alice.address, defTokenData)
+  const tx = await aliceNft.mint(
+    alice.address, 
+    defTokenData.contentURI,
+    defTokenData.metadataURI,
+    defTokenData.contentHash,
+    defTokenData.metadataHash
+  )
   const res = await tx.wait()
   const nft: NFT = {
     address: squadNft.address.toLowerCase(), 

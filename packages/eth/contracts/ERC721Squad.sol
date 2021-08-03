@@ -14,6 +14,8 @@ contract ERC721Squad is ERC721 {
     struct TokenData {
         string contentURI;
         string metadataURI;
+        bytes32 contentHash;
+        bytes32 metadataHash;
     }
 
 
@@ -22,6 +24,8 @@ contract ERC721Squad is ERC721 {
     Counters.Counter public tokenIdTracker;
     mapping(uint256 => string) public contentURIs;
     mapping(uint256 => string) public metadataURIs;
+    mapping(uint256 => bytes32) public contentHashes;
+    mapping(uint256 => bytes32) public metadataHashes;
 
 
     //======== Events ========
@@ -30,7 +34,9 @@ contract ERC721Squad is ERC721 {
       uint256 tokenId,
       address creator,
       string contentURI,
-      string metadataURI
+      string metadataURI,
+      bytes32 contentHash,
+      bytes32 metadataHash
     );
 
 
@@ -41,24 +47,40 @@ contract ERC721Squad is ERC721 {
 
     //======== External Functions ========
 
-    function mint(address creator, string memory contentURI, string memory metadataURI)
+    function mint(
+        address creator, 
+        string calldata contentURI, 
+        string calldata metadataURI,
+        bytes32 contentHash,
+        bytes32 metadataHash
+    )
         external
-        validTokenData(TokenData(contentURI, metadataURI))
         returns(uint256)
     {
-        TokenData memory data = TokenData(contentURI, metadataURI);
+        TokenData memory data = TokenData(
+            contentURI, 
+            metadataURI,
+            contentHash,
+            metadataHash
+        );
+        require(_validTokenData(data), "mint: invalid token data.");
         require(creator != address(0), "mint: creator is 0 address.");
 
         uint256 tokenId = tokenIdTracker.current();
         _safeMint(creator, tokenId);
         tokenIdTracker.increment();
-        _setTokenData(tokenId, data);
+        _setTokenData(
+            tokenId, 
+            data
+        );
 
         emit TokenMinted(
             tokenId,
             creator,
-            data.contentURI,
-            data.metadataURI
+            contentURIs[tokenId],
+            metadataURIs[tokenId],
+            contentHashes[tokenId],
+            metadataHashes[tokenId]
         );
 
         return tokenId;
@@ -71,17 +93,18 @@ contract ERC721Squad is ERC721 {
 
     //======== Internal Functions ========
 
+    function _validTokenData(TokenData memory data) pure internal returns(bool) {
+        require(bytes(data.contentURI).length != 0, "validTokenData: contentURI is missing.");
+        require(bytes(data.metadataURI).length != 0, "validTokenData: metadataURI is missing.");
+        require(data.contentHash != "", "validTokenData: metadataURI is missing.");
+        require(data.metadataHash != "", "validTokenData: metadataURI is missing.");
+        return true;
+    }
+
     function _setTokenData(uint256 tokenId, TokenData memory data) internal {
         contentURIs[tokenId] = data.contentURI;
         metadataURIs[tokenId] = data.metadataURI;
-    }
-
-
-    //======== Modifiers ========
-
-    modifier validTokenData(TokenData memory data) {
-        require(bytes(data.contentURI).length != 0, "validTokenData: contentURI is missing.");
-        require(bytes(data.metadataURI).length != 0, "validTokenData: metadataURI is missing.");
-        _;
+        contentHashes[tokenId] = data.contentHash;
+        metadataHashes[tokenId] = data.metadataHash;
     }
 }

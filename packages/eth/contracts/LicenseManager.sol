@@ -5,14 +5,12 @@ pragma solidity 0.8.5;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 interface IERC721Squad {
-    struct TokenData {
-        string contentURI;
-        string metadataURI;
-    }
-
     function mint(
       address creator,
-      TokenData memory data
+      string calldata contentURI, 
+      string calldata metadataURI,
+      bytes32 contentHash,
+      bytes32 metadataHash
     ) external returns(uint256);
 }
 

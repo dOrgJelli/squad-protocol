@@ -17,11 +17,18 @@ describe('ERC721Squad', () => {
     let alice: ethersTypes.Signer
     let squadNft: ERC721Squad
 
-    interface TokenData { contentURI: string; metadataURI: string }
+    interface TokenData { 
+      contentURI: string,
+      metadataURI: string,
+      contentHash: ethersTypes.BytesLike,
+      metadataHash: ethersTypes.BytesLike
+    }
 
     const defTokenData: TokenData = {
       contentURI: 'contentURI',
-      metadataURI: 'metadataURI'
+      metadataURI: 'metadataURI',
+      contentHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('contentURI')),
+      metadataHash: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('metadataURI'))
     }
 
     async function mint(signer: ethersTypes.Signer) {
@@ -29,15 +36,22 @@ describe('ERC721Squad', () => {
 
         await squadNftWithSigner.mint(
           await owner.getAddress(),
-          defTokenData
+          defTokenData.contentURI,
+          defTokenData.metadataURI,
+          defTokenData.contentHash,
+          defTokenData.metadataHash
         )
     }
 
     async function checkNFT(id: number) {
         const contentURI = await squadNft.contentURIs(id)
         const metadataURI = await squadNft.metadataURIs(id)
+        const contentHash = await squadNft.contentHashes(id)
+        const metadataHash = await squadNft.metadataHashes(id)
         assert.equal(contentURI, defTokenData.contentURI, 'content URI')
         assert.equal(metadataURI, defTokenData.metadataURI, 'metadata URI')
+        assert.equal(contentHash, defTokenData.contentHash, 'content hash')
+        assert.equal(metadataHash, defTokenData.metadataHash, 'metadata hash')
     }
 
     beforeEach(async () => {

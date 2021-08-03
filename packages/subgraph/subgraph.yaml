@@ -20,7 +20,7 @@ dataSources:
         - name: ERC721Squad
           file: ../eth/abis/ERC721Squad.json
       eventHandlers:
-        - event: TokenMinted(uint256,address,string,string)
+        - event: TokenMinted(uint256,address,string,string,bytes32,bytes32)
           handler: handleTokenMinted
       file: ./src/ERC721Squad/mapping.ts
   - kind: ethereum/contract

@@ -103,11 +103,20 @@ contract PurchasableLicenseManager is LicenseManager {
 
     function createAndRegisterNFT(
         address creator,
-        IERC721Squad.TokenData calldata data,
+        string calldata contentURI, 
+        string calldata metadataURI,
+        bytes32 contentHash,
+        bytes32 metadataHash,
         uint256 price, 
         uint8 sharePercentage
     ) external {
-        uint256 nftId = squadNft.mint(creator, data);
+        uint256 nftId = squadNft.mint(
+            creator, 
+            contentURI, 
+            metadataURI,
+            contentHash,
+            metadataHash
+        );
         registerNFT(address(squadNft), nftId, creator, price, sharePercentage);
     }
 

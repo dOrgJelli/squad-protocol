@@ -3,6 +3,8 @@ type SquadNFT @entity {
   creator: Bytes!
   contentURI: String!
   metadataURI: String!
+  contentHash: Bytes!
+  metadataHash: Bytes!
   blockCreated: BigInt!
 }
 
