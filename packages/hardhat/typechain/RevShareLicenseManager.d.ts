@@ -22,7 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface RevShareLicenseManagerInterface extends ethers.utils.Interface {
   functions: {
     "NAME()": FunctionFragment;
-    "createAndRegisterNFT(address,tuple,uint8)": FunctionFragment;
+    "createAndRegisterNFT(address,string,string,bytes32,bytes32,uint8)": FunctionFragment;
     "description()": FunctionFragment;
     "minSharePercentages(address,uint256)": FunctionFragment;
     "registerNFT(address,uint256,address,uint8)": FunctionFragment;
@@ -34,7 +34,7 @@ interface RevShareLicenseManagerInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "NAME", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "createAndRegisterNFT",
-    values: [string, { contentURI: string; metadataURI: string }, BigNumberish]
+    values: [string, string, string, BytesLike, BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "description",
@@ -142,7 +142,10 @@ export class RevShareLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       minSharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -182,7 +185,10 @@ export class RevShareLicenseManager extends BaseContract {
 
   createAndRegisterNFT(
     creator: string,
-    data: { contentURI: string; metadataURI: string },
+    contentURI: string,
+    metadataURI: string,
+    contentHash: BytesLike,
+    metadataHash: BytesLike,
     minSharePercentage: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -222,7 +228,10 @@ export class RevShareLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       minSharePercentage: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -288,7 +297,10 @@ export class RevShareLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       minSharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -329,7 +341,10 @@ export class RevShareLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       minSharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

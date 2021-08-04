@@ -21,6 +21,17 @@ interface Addresses {
     PurchasableLicenseManager: string
 }
 
+/*
+ * Records addresses of the most recently deployed contracts by
+ * network This is used by polywrap tests and other future processes
+ * to connect to deployed contracts.
+ *
+ * A json file for each network is produced at
+ * {network}-addresses.json as well as an aggregate file
+ * addresses.json with a mapping from network -> addresses object
+ *
+ * The individual network files make things nice for test automation
+ */
 function recordAddresses(addresses: Addresses, network: string) {
     if (network == "http://127.0.0.1:8545/" || "http://localhost:8545/") { network = "local" }
     let JSONAddresses
@@ -32,6 +43,7 @@ function recordAddresses(addresses: Addresses, network: string) {
     JSONAddresses[network] = addresses
     const JSONString = JSON.stringify(JSONAddresses)
     fs.writeFileSync('addresses.json', JSONString)
+    fs.writeFileSync(`${network}-addresses.json`, JSON.stringify(addresses))
     console.log(`Wrote new addresses on network ${network} to addresses.json`)
 }
 

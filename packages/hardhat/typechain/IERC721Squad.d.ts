@@ -21,12 +21,12 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IERC721SquadInterface extends ethers.utils.Interface {
   functions: {
-    "mint(address,tuple)": FunctionFragment;
+    "mint(address,string,string,bytes32,bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "mint",
-    values: [string, { contentURI: string; metadataURI: string }]
+    values: [string, string, string, BytesLike, BytesLike]
   ): string;
 
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -80,21 +80,30 @@ export class IERC721Squad extends BaseContract {
   functions: {
     mint(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   mint(
     creator: string,
-    data: { contentURI: string; metadataURI: string },
+    contentURI: string,
+    metadataURI: string,
+    contentHash: BytesLike,
+    metadataHash: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     mint(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -104,7 +113,10 @@ export class IERC721Squad extends BaseContract {
   estimateGas: {
     mint(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -112,7 +124,10 @@ export class IERC721Squad extends BaseContract {
   populateTransaction: {
     mint(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

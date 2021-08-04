@@ -1,43 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/ERC20Mintable.sol": {
-      "lastModificationDate": 1627925838012,
-      "contentHash": "27d0fc48839308f5ac4be412175878a2",
-      "sourceName": "contracts/ERC20Mintable.sol",
-      "solcConfig": {
-        "version": "0.8.5",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
-      ],
-      "versionPragmas": [
-        "0.8.5"
-      ],
-      "artifacts": [
-        "ERC20Mintable"
-      ]
-    },
     "/home/jesse/projects/SquadGames/squad-protocol/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
       "lastModificationDate": 1627928112020,
       "contentHash": "acad756301f0fb200ecc66138e8cd5c5",
@@ -214,81 +177,6 @@
       ],
       "artifacts": [
         "Context"
-      ]
-    },
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/PurchasableLicenseManager.sol": {
-      "lastModificationDate": 1627925838012,
-      "contentHash": "08bb6c2a2af232ef8077329edd1f6b1b",
-      "sourceName": "contracts/PurchasableLicenseManager.sol",
-      "solcConfig": {
-        "version": "0.8.5",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./LicenseManager.sol",
-        "./ERC20Mintable.sol",
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
-      ],
-      "versionPragmas": [
-        "0.8.5"
-      ],
-      "artifacts": [
-        "PurchasableLicenseManager"
-      ]
-    },
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/LicenseManager.sol": {
-      "lastModificationDate": 1627925838012,
-      "contentHash": "2d82dae5ca77fea84adf314a6a0c7c8d",
-      "sourceName": "contracts/LicenseManager.sol",
-      "solcConfig": {
-        "version": "0.8.5",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
-      ],
-      "versionPragmas": [
-        "0.8.5"
-      ],
-      "artifacts": [
-        "IERC721Squad",
-        "LicenseManager"
       ]
     },
     "/home/jesse/projects/SquadGames/squad-protocol/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
@@ -577,79 +465,6 @@
         "IERC165"
       ]
     },
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/RevShareLicenseManager.sol": {
-      "lastModificationDate": 1627925838012,
-      "contentHash": "3c49d35411b2a8ed8239b4a5650d4f45",
-      "sourceName": "contracts/RevShareLicenseManager.sol",
-      "solcConfig": {
-        "version": "0.8.5",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./LicenseManager.sol"
-      ],
-      "versionPragmas": [
-        "0.8.5"
-      ],
-      "artifacts": [
-        "RevShareLicenseManager"
-      ]
-    },
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/ERC721Squad.sol": {
-      "lastModificationDate": 1627934149083,
-      "contentHash": "ad109429ebed9359ac056a8414f3c6a5",
-      "sourceName": "contracts/ERC721Squad.sol",
-      "solcConfig": {
-        "version": "0.8.5",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/utils/Counters.sol"
-      ],
-      "versionPragmas": [
-        "0.8.5"
-      ],
-      "artifacts": [
-        "ERC721Squad"
-      ]
-    },
     "/home/jesse/projects/SquadGames/squad-protocol/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
       "lastModificationDate": 1627928111833,
       "contentHash": "b7811964d33f23b2d45ed3ebb76a4548",
@@ -684,8 +499,193 @@
         "Counters"
       ]
     },
-    "/home/jesse/projects/SquadGames/squad-protocol/packages/eth/contracts/Royalties.sol": {
-      "lastModificationDate": 1627925838012,
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/ERC20Mintable.sol": {
+      "lastModificationDate": 1628014408946,
+      "contentHash": "27d0fc48839308f5ac4be412175878a2",
+      "sourceName": "contracts/ERC20Mintable.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "0.8.5"
+      ],
+      "artifacts": [
+        "ERC20Mintable"
+      ]
+    },
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/PurchasableLicenseManager.sol": {
+      "lastModificationDate": 1628014408946,
+      "contentHash": "630c8a2398cf06b92a3c79e388b3644f",
+      "sourceName": "contracts/PurchasableLicenseManager.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./LicenseManager.sol",
+        "./ERC20Mintable.sol",
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+      ],
+      "versionPragmas": [
+        "0.8.5"
+      ],
+      "artifacts": [
+        "PurchasableLicenseManager"
+      ]
+    },
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/LicenseManager.sol": {
+      "lastModificationDate": 1628014408946,
+      "contentHash": "3c373927dcf1b9fc05992e1c16c9b7e6",
+      "sourceName": "contracts/LicenseManager.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
+      ],
+      "versionPragmas": [
+        "0.8.5"
+      ],
+      "artifacts": [
+        "IERC721Squad",
+        "LicenseManager"
+      ]
+    },
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/RevShareLicenseManager.sol": {
+      "lastModificationDate": 1628014408946,
+      "contentHash": "97c6fccfb898a02bd2818937697dbfac",
+      "sourceName": "contracts/RevShareLicenseManager.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./LicenseManager.sol"
+      ],
+      "versionPragmas": [
+        "0.8.5"
+      ],
+      "artifacts": [
+        "RevShareLicenseManager"
+      ]
+    },
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/ERC721Squad.sol": {
+      "lastModificationDate": 1628014408946,
+      "contentHash": "e885a9ef76d4f905b3585fc4d1c1c6fb",
+      "sourceName": "contracts/ERC721Squad.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/utils/Counters.sol"
+      ],
+      "versionPragmas": [
+        "0.8.5"
+      ],
+      "artifacts": [
+        "ERC721Squad"
+      ]
+    },
+    "/home/jesse/projects/SquadGames/squad-protocol/packages/hardhat/contracts/Royalties.sol": {
+      "lastModificationDate": 1628014408946,
       "contentHash": "5cd250d9a95213c85c11600f15cfad47",
       "sourceName": "contracts/Royalties.sol",
       "solcConfig": {

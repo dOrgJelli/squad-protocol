@@ -22,7 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface PurchasableLicenseManagerInterface extends ethers.utils.Interface {
   functions: {
     "NAME()": FunctionFragment;
-    "createAndRegisterNFT(address,tuple,uint256,uint8)": FunctionFragment;
+    "createAndRegisterNFT(address,string,string,bytes32,bytes32,uint256,uint8)": FunctionFragment;
     "description()": FunctionFragment;
     "holdsLicense(address,uint256,address)": FunctionFragment;
     "purchase(address,uint256,address,uint256)": FunctionFragment;
@@ -39,7 +39,10 @@ interface PurchasableLicenseManagerInterface extends ethers.utils.Interface {
     functionFragment: "createAndRegisterNFT",
     values: [
       string,
-      { contentURI: string; metadataURI: string },
+      string,
+      string,
+      BytesLike,
+      BytesLike,
       BigNumberish,
       BigNumberish
     ]
@@ -173,7 +176,10 @@ export class PurchasableLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       price: BigNumberish,
       sharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -234,7 +240,10 @@ export class PurchasableLicenseManager extends BaseContract {
 
   createAndRegisterNFT(
     creator: string,
-    data: { contentURI: string; metadataURI: string },
+    contentURI: string,
+    metadataURI: string,
+    contentHash: BytesLike,
+    metadataHash: BytesLike,
     price: BigNumberish,
     sharePercentage: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -295,7 +304,10 @@ export class PurchasableLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       price: BigNumberish,
       sharePercentage: BigNumberish,
       overrides?: CallOverrides
@@ -405,7 +417,10 @@ export class PurchasableLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       price: BigNumberish,
       sharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -461,7 +476,10 @@ export class PurchasableLicenseManager extends BaseContract {
 
     createAndRegisterNFT(
       creator: string,
-      data: { contentURI: string; metadataURI: string },
+      contentURI: string,
+      metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       price: BigNumberish,
       sharePercentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }

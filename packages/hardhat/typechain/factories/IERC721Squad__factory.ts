@@ -15,21 +15,24 @@ const _abi = [
         type: "address",
       },
       {
-        components: [
-          {
-            internalType: "string",
-            name: "contentURI",
-            type: "string",
-          },
-          {
-            internalType: "string",
-            name: "metadataURI",
-            type: "string",
-          },
-        ],
-        internalType: "struct IERC721Squad.TokenData",
-        name: "data",
-        type: "tuple",
+        internalType: "string",
+        name: "contentURI",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
+      {
+        internalType: "bytes32",
+        name: "contentHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "metadataHash",
+        type: "bytes32",
       },
     ],
     name: "mint",

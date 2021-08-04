@@ -18,7 +18,7 @@ dataSources:
         - SquadNFT
       abis:
         - name: ERC721Squad
-          file: ../eth/abis/ERC721Squad.json
+          file: ../hardhat/abis/ERC721Squad.json
       eventHandlers:
         - event: TokenMinted(uint256,address,string,string,bytes32,bytes32)
           handler: handleTokenMinted
@@ -40,7 +40,7 @@ dataSources:
         - PurchaseEvent
       abis:
         - name: PurchasableLicenseManager
-          file: ../eth/abis/PurchasableLicenseManager.json
+          file: ../hardhat/abis/PurchasableLicenseManager.json
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint256,uint8,address)
           handler: handleNFTRegistered
@@ -65,7 +65,7 @@ dataSources:
         - RevShareLicense
       abis:
         - name: RevShareLicenseManager
-          file: ../eth/abis/RevShareLicenseManager.json
+          file: ../hardhat/abis/RevShareLicenseManager.json
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint8)
           handler: handleNFTRegistered
@@ -87,7 +87,7 @@ dataSources:
         - Transfer
       abis:
         - name: Royalties
-          file: ../eth/abis/Royalties.json
+          file: ../hardhat/abis/Royalties.json
       eventHandlers:
         - event: WindowIncremented(uint256,uint256,uint256,bytes32)
           handler: handleWindowIncremented

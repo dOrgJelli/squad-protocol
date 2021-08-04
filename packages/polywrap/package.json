@@ -9,11 +9,9 @@
     "build:contract": "node ./scripts/build-contract.js",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
-    "deploy": "yarn deploy:contracts && yarn deploy:web3api",
+    "deploy": "yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens squadprotocol.eth",
-    "deploy:contracts": "cd ../hardhat && PK=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d yarn deploy",
-    "test": "yarn test:constants && npx w3 query ./recipes/e2e.json",
-    "test:constants": "node ./scripts/prep-constants.js"
+    "test": "npx w3 query ./recipes/e2e.json"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.30",

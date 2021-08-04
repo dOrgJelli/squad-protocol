@@ -9,5 +9,16 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "up": "yarn polywrap:up && yarn hardhat:deploy:local && yarn link-addresses && yarn polywrap:deploy:local",
+    "polywrap:up": "yarn workspace @squad/polywrap test:env:up",
+    "hardhat:deploy:local": "yarn workspace @squad/hardhat deploy",
+    "link-addresses": "ln -sf ../../hardhat/local-addresses.json ./packages/polywrap/recipes/constants.json",
+    "polywrap:deploy:local": "yarn workspace @squad/polywrap deploy:web3api",
+    "down": "yarn workspace @squad/polywrap test:env:down && rm -f ./packages/hardhat/addresses.json ./packages/polywrap/recipes/constants.json",
+    "test": "yarn test:hardhat && yarn test:polywrap",
+    "test:hardhat": "yarn workspace @squad/hardhat test",
+    "test:polywrap": "yarn workspace @squad/polywrap test"
+  }
 }

@@ -23,11 +23,13 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "contentHashes(uint256)": FunctionFragment;
     "contentURIs(uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "metadataHashes(uint256)": FunctionFragment;
     "metadataURIs(uint256)": FunctionFragment;
-    "mint(address,string,string)": FunctionFragment;
+    "mint(address,string,string,bytes32,bytes32)": FunctionFragment;
     "name()": FunctionFragment;
     "nextTokenId()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
@@ -46,6 +48,10 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "contentHashes",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "contentURIs",
     values: [BigNumberish]
   ): string;
@@ -58,12 +64,16 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "metadataHashes",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "metadataURIs",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
-    values: [string, string, string]
+    values: [string, string, string, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -103,6 +113,10 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "contentHashes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "contentURIs",
     data: BytesLike
   ): Result;
@@ -112,6 +126,10 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "metadataHashes",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -151,7 +169,7 @@ interface ERC721SquadInterface extends ethers.utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "TokenMinted(uint256,address,string,string)": EventFragment;
+    "TokenMinted(uint256,address,string,string,bytes32,bytes32)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
@@ -213,6 +231,11 @@ export class ERC721Squad extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    contentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     contentURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -229,6 +252,11 @@ export class ERC721Squad extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    metadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     metadataURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -238,6 +266,8 @@ export class ERC721Squad extends BaseContract {
       creator: string,
       contentURI: string,
       metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -303,6 +333,8 @@ export class ERC721Squad extends BaseContract {
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  contentHashes(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   contentURIs(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   getApproved(
@@ -316,12 +348,19 @@ export class ERC721Squad extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  metadataHashes(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   metadataURIs(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   mint(
     creator: string,
     contentURI: string,
     metadataURI: string,
+    contentHash: BytesLike,
+    metadataHash: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -379,6 +418,11 @@ export class ERC721Squad extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    contentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     contentURIs(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     getApproved(
@@ -392,6 +436,11 @@ export class ERC721Squad extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    metadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     metadataURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -401,6 +450,8 @@ export class ERC721Squad extends BaseContract {
       creator: string,
       contentURI: string,
       metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -473,14 +524,18 @@ export class ERC721Squad extends BaseContract {
       tokenId?: null,
       creator?: null,
       contentURI?: null,
-      metadataURI?: null
+      metadataURI?: null,
+      contentHash?: null,
+      metadataHash?: null
     ): TypedEventFilter<
-      [BigNumber, string, string, string],
+      [BigNumber, string, string, string, string, string],
       {
         tokenId: BigNumber;
         creator: string;
         contentURI: string;
         metadataURI: string;
+        contentHash: string;
+        metadataHash: string;
       }
     >;
 
@@ -503,6 +558,11 @@ export class ERC721Squad extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    contentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     contentURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -519,6 +579,11 @@ export class ERC721Squad extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    metadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     metadataURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -528,6 +593,8 @@ export class ERC721Squad extends BaseContract {
       creator: string,
       contentURI: string,
       metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -595,6 +662,11 @@ export class ERC721Squad extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    contentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     contentURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -611,6 +683,11 @@ export class ERC721Squad extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    metadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     metadataURIs(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -620,6 +697,8 @@ export class ERC721Squad extends BaseContract {
       creator: string,
       contentURI: string,
       metadataURI: string,
+      contentHash: BytesLike,
+      metadataHash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
