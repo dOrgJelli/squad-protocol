@@ -1,17 +1,50 @@
 # squad-protocol
 Monorepo for Squad protocol contracts, subgraph, and APIs
 
-# dev
-in root: `yarn`
+# Local Dev Environment
+
+Before you start, install the dependencies in the root of the project
+
+`$ yarn`
+
+To stand up a **full local dev environment**
+
+`$ yarn up`
+
+To run all tests
+
+`$ yarn test`
+
+To run workspace specific tests run either
+
+`$ yarn test:hardhat` or `yarn test:polywrap`
+
+(and in the future `yarn test:subgraph`)
+
+To tear down the local dev environment
+
+`$ yarn down`
 
 ## hardhat
-### testing
-in `packages/eth`: `yarn test`
 
-### deploying
-in `packages/hardhat`:
-1. If deploying locally, in tab 1: `npx hardat node`
-2. In tab 2: `PK={your_private_key} NETWORK={network} yarn deploy`. Leaving PK and network blank defaults to local PK and network. Other options: homestead (mainnet), ropsten, rinkeby, etc.
+If you are working only in the hardhat workspace and don't need to
+stand up a full dev environment use the following in `packages/hardhat`.
+
+To set up a hardhat only development environment
+
+first start a hardhat node. NOTE: This is a hardhat node which is a
+different local test chain than what you'll get with the project's
+root level `yarn up` which uses polywrap's dev environment.
+
+`packages/hardhat $ yarn up`
+
+Then in another shell or shell tab
+
+`packages/hardhat $ yarn deploy:local`
+
+to run the tests
+
+`packages/hardhat $ yarn test`
 
 ## subgraph
 
@@ -20,8 +53,8 @@ In root:
 `yarn` or `yarn install`
 
 Processes you must have running:
-- hardhat local network node
-- contracts deployed to hardhat node (using `yarn deploy` script)
+- hardhat local network node (satisfied by `yarn up`)
+- contracts deployed to hardhat node (satisfied by `yarn up`)
 - graph-node docker-compose-up
 
 Then, in this package:
@@ -36,9 +69,16 @@ After local setup, `yarn test` from the subgraph package.
 
 ## polywrap
 
+As polywrap development depends on othwer workspaces use the full
+local dev environment as described above.
+
 ### testing
-We are not keeping our contracts in this package (they are in the "eth" package), so the testing flow for polywrap will look something like this. In the polywrap package:
-1. `yarn build:web3api` (contracts should be compiled in the `hardhat` package)
-2. `yarn test:env:up`
-3. `yarn deploy` (will use the `eth` package's deploy script to deploy to polywrap's docker env)
-4. `yarn test`
+
+To run the polywrap tests from `packages/polywrap` run
+
+`packages/polywrap $ yarn test`
+
+You can also run just the polywrap tests from the project root with
+
+`$ yarn test:polywrap`
+
