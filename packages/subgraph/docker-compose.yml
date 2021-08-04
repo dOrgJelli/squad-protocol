@@ -9,23 +9,26 @@ services:
       - '8030:8030'
       - '8040:8040'
     depends_on:
-      - ipfs
+#      - ipfs
       - postgres
     environment:
       postgres_host: postgres
       postgres_user: graph-node
       postgres_pass: let-me-in
       postgres_db: graph-node
-      ipfs: 'ipfs:5001'
+      ipfs: 'http://host.docker.internal:5001'
       # Change next line if you want to connect to a different JSON-RPC endpoint
       ethereum: 'mainnet:http://host.docker.internal:8545'
       GRAPH_LOG: info
-  ipfs:
-    image: ipfs/go-ipfs:v0.4.23
-    ports:
-      - '5001:5001'
-    volumes:
-      - ./data/ipfs:/data/ipfs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+#  ipfs:
+#    image: ipfs/go-ipfs:v0.4.23
+#    ports:
+#      - '5001:5001'
+#    volumes:
+#      - ./data/ipfs:/data/ipfs
   postgres:
     image: postgres
     ports:

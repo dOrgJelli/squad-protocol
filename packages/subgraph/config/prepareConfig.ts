@@ -16,8 +16,9 @@ const configJSON = {
     royaltiesAbi: "../hardhat/abis/Royalties.json"
 }
 
+// Why do we set the network to mainnet if network is local?
 if (network == "local") { configJSON.network = "mainnet" }
 
 fs.writeFileSync('./config/subgraphConfig.json', JSON.stringify(configJSON))
 
-console.log(`Prepared config for network: ${network}`)
+console.log(`Prepared subgraph config for network: ${network}`)
