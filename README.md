@@ -81,3 +81,15 @@ To run the polywrap tests from `packages/polywrap` run
 You can also run just the polywrap tests from the project root with
 
 `$ yarn test:polywrap`
+# Squad Protocol Packages
+
+## Ethereum Smart Contracts
+
+Our smart contracts are managed by hardhat in `/hardhat`
+
+## API
+
+The api is built from a Polywrap project `/polywrap` which depends on
+a subgraph `/subgraph`
+
+

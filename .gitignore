@@ -2,15 +2,15 @@ node_modules
 */node_modules
 */*/node_modules
 
-packages/hardhat/artifacts
-packages/hardhat/artifacts/*
-packages/hardhat/cache
-packages/hardhat/typechain
-packages/hardhat/typechain/*
+hardhat/artifacts
+hardhat/artifacts/*
+hardhat/cache
+hardhat/typechain
+hardhat/typechain/*
 
-packages/subgraph/build
-packages/subgraph/generated
-packages/subgraph/data
+subgraph/build
+subgraph/generated
+subgraph/data
 
 yarn-error.log
 
