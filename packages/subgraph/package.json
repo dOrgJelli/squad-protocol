@@ -2,14 +2,26 @@
   "name": "@squad/subgraph",
   "version": "0.1.0",
   "scripts": {
+    "up:integrated": "docker-compose -f docker-compose-integrated.yaml up -d",
+    "up:standalone": "docker-compose -f docker-compose-standalone.yaml up -d",
+    "down": "docker-compose -f docker-compose-integrated.yaml down || docker-compose -f docker-compose-standalone.yaml down",
+
+    "build:all": "yarn prepare-local && yarn codegen && yarn build && yarn create-local",
+
+    "logs": "docker-compose -f docker-compose-integrated.yaml logs || docker-compose -f docker-compose-standalone.yaml logs",
+
     "prepare-local": "ts-node config/prepareConfig && mustache config/subgraphConfig.json subgraph.template.yaml > subgraph.yaml",
     "create": "graph create squadgames/squad-POC-subgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create squadgames/squad-POC-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy squadgames/squad-POC-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy squadgames/squad-POC-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "test": "yarn prepare-local && mocha -r ts-node/register ./test/*"
+    "deploy:local": "graph deploy squadgames/squad-POC-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+
+    "test": "yarn test:one",
+    "test:one": "PK=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d mocha -f 'should add an NFT on TokenMinted event' -r ts-node/register ./test/*",
+    "ci": "yarn test:all",
+    "test:all": "PK=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d mocha -r ts-node/register ./test/*"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.0",

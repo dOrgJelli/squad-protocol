@@ -7,7 +7,6 @@
   "scripts": {
     "up": "npx hardhat node",
     "deploy:local": "PK=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d ts-node scripts/deploy.ts",
-    "deploy:now": "PK=0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e ts-node scripts/deploy.ts",
     "test": "hardhat compile && hardhat test",
     "test-local": "yarn deploy-local && hardhat --network localhost test"
   },

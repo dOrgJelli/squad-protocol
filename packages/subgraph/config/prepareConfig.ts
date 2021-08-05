@@ -2,7 +2,7 @@ import * as fs from 'fs'
 
 const network = (process.env.NETWORK ? process.env.NETWORK : "local")
 
-const addresses = require('../../hardhat/addresses.json')
+const addresses = require('./addresses.json')
 
 const configJSON = {
     network: network,

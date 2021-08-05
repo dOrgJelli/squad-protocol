@@ -10,7 +10,7 @@ const RoyaltiesAbi = require('../../hardhat/abis/Royalties.json')
 const addresses = require('../../hardhat/addresses.json')
 
 const APIURL = 'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
-const ALICE_PK = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+const ALICE_PK = process.env.PK ? process.env.PK : '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
 const SQUAD_NFT_ADDR = addresses.local.ERC721Squad.toLowerCase()
 const FDAI_ADDR = addresses.local.ERC20Mintable.toLowerCase()
 const ROYALTIES_ADDR = addresses.local.Royalties.toLowerCase()
@@ -24,6 +24,7 @@ export const alice = new ethers.Wallet(
   ALICE_PK, 
   provider
 )
+
 const squadNft = new ethers.Contract(
   SQUAD_NFT_ADDR,
   SquadNFTAbi,
