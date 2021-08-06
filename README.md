@@ -17,9 +17,7 @@ To run all tests
 
 To run workspace specific tests run either
 
-`$ yarn test:hardhat` or `yarn test:polywrap`
-
-(and in the future `yarn test:subgraph`)
+`$ yarn test:hardhat`,  `yarn test:polywrap`, or `yarn test:subgraph`
 
 To tear down the local dev environment
 
@@ -28,44 +26,40 @@ To tear down the local dev environment
 ## hardhat
 
 If you are working only in the hardhat workspace and don't need to
-stand up a full dev environment use the following in `packages/hardhat`.
+stand up a full dev environment use the following in `hardhat`.
 
 To set up a hardhat only development environment
 
 first start a hardhat node. NOTE: This is a hardhat node which is a
 different local test chain than what you'll get with the project's
-root level `yarn up` which uses polywrap's dev environment.
+root level `yarn up`, which uses polywrap's dev environment.
 
-`packages/hardhat $ yarn up`
+`hardhat $ yarn up`
 
 Then in another shell or shell tab
 
-`packages/hardhat $ yarn deploy:local`
+`hardhat $ yarn deploy:local`
 
 to run the tests
 
-`packages/hardhat $ yarn test`
+`hardhat $ yarn test`
 
 ## subgraph
-
-### local setup
-In root:
-`yarn` or `yarn install`
 
 Processes you must have running:
 - hardhat local network node (satisfied by `yarn up`)
 - contracts deployed to hardhat node (satisfied by `yarn up`)
-- graph-node docker-compose-up
 
 Then, in this package:
-`yarn prepare-local`
-`yarn codegen`
-`yarn build`
-`yarn create-local`
-`yarn deploy-local`
+`subgraph $ yarn up:standalone`
+`subgraph $ yarn build:all`
+`subgraph $ yarn deploy:local`
 
 ### testing
-After local setup, `yarn test` from the subgraph package.
+
+After the above setup
+
+`subgraph $ yarn test:all`
 
 ## polywrap
 
@@ -74,22 +68,23 @@ local dev environment as described above.
 
 ### testing
 
-To run the polywrap tests from `packages/polywrap` run
+To run the polywrap tests from `polywrap` run
 
-`packages/polywrap $ yarn test`
+`polywrap $ yarn test`
 
 You can also run just the polywrap tests from the project root with
 
-`$ yarn test:polywrap`
-# Squad Protocol Packages
+`polywrap $ yarn test:polywrap`
+
+# Squad Protocol Packages Overview
 
 ## Ethereum Smart Contracts
 
-Our smart contracts are managed by hardhat in `/hardhat`
+Our smart contracts are managed by hardhat in `/hardhat`.
 
 ## API
 
 The api is built from a Polywrap project `/polywrap` which depends on
-a subgraph `/subgraph`
+a subgraph `/subgraph`.
 
 

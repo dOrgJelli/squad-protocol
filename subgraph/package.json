@@ -6,13 +6,13 @@
     "up:standalone": "docker-compose -f docker-compose-standalone.yaml up -d",
     "down": "docker-compose -f docker-compose-integrated.yaml down || docker-compose -f docker-compose-standalone.yaml down",
 
-    "build:all": "yarn prepare-local && yarn codegen && yarn build && yarn create-local",
+    "build:all": "yarn prepare:local && yarn codegen && yarn build && yarn create:local",
 
     "logs": "docker-compose -f docker-compose-integrated.yaml logs || docker-compose -f docker-compose-standalone.yaml logs",
 
-    "prepare-local": "ts-node config/prepareConfig && mustache config/subgraphConfig.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:local": "ts-node config/prepareConfig && mustache config/subgraphConfig.json subgraph.template.yaml > subgraph.yaml",
     "create": "graph create squadgames/squad-POC-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create squadgames/squad-POC-subgraph --node http://127.0.0.1:8020",
+    "create:local": "graph create squadgames/squad-POC-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy squadgames/squad-POC-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
