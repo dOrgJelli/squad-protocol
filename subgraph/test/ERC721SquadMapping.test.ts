@@ -7,7 +7,7 @@
 
 import { assert } from 'chai'
 import { 
-  alice,
+  getSigner,
   defTokenData,
   mint, 
   delay, 
@@ -22,8 +22,10 @@ describe('ERC721Squad mapping', function () {
     await delay(5000)
 
     const query = await querySquadNFT(nft)
+    const alice = await getSigner()
+    const aliceAddress = await alice.getAddress()
     assert.equal(query.id, Number(nft.id), 'id')
-    assert.equal(query.creator, alice.address.toLowerCase(), 'creator')
+    assert.equal(query.creator, aliceAddress.toLowerCase(), 'creator')
     assert.equal(query.contentURI, defTokenData.contentURI, 'content URI')
     assert.equal(query.metadataURI, defTokenData.metadataURI, 'metadata URI')
     assert.equal(query.blockCreated, nft.blockCreated, 'block number')

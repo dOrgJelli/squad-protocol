@@ -19,7 +19,7 @@ import {
   queryRevShareLicenses,
   makeContentId,
   makeLicenseId,
-  alice,
+  getAddress,
   registerRSL,
   unregisterRSL,
   mintAndRegisterRSL,
@@ -31,12 +31,13 @@ async function checkNftRegistrationRSL(nft: NFT, share: number) {
   const licenses = await queryRevShareLicenses(nft, REV_SHARE_LM_ADDR)
   const license = licenses[0]
 
+  const aliceAddress = await getAddress()
   assert.equal(content.id, makeContentId(nft), 'content id')
   assert.equal(content.nftAddress, nft.address, 'content nft address')
   assert.equal(content.nftId, nft.id, 'content nft id')
   assert.equal(license.id, makeLicenseId(nft, REV_SHARE_LM_ADDR), 'license id')
   assert.equal(license.licenseManagerAddress, REV_SHARE_LM_ADDR, 'license manager address')
-  assert.equal(license.registrant, alice.address.toLowerCase(), 'license registrant')
+  assert.equal(license.registrant, aliceAddress.toLowerCase(), 'license registrant')
   assert.equal(license.minSharePercentage, share, 'license share percentage')
 }
 

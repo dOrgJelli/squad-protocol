@@ -1,17 +1,10 @@
-import { ethers } from 'ethers'
+import { ethers } from 'hardhat'
 import fs from 'fs'
 import { ERC20Mintable__factory } from '../typechain/factories/ERC20Mintable__factory'
 import { Royalties__factory } from '../typechain/factories/Royalties__factory'
 import { ERC721Squad__factory } from '../typechain/factories/ERC721Squad__factory'
 import { RevShareLicenseManager__factory } from '../typechain/factories/RevShareLicenseManager__factory'
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
-
-function getWallet(network: string): ethers.Wallet {
-    console.log('PK', process.env.PK)
-    const pk = (process.env.PK ? process.env.PK : "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
-    const provider = ethers.getDefaultProvider(network)
-    return new ethers.Wallet(pk, provider)
-}
 
 interface Addresses {
     ERC20Mintable?: string,
@@ -43,8 +36,10 @@ function recordAddresses(addresses: Addresses, network: string) {
     JSONAddresses[network] = addresses
     const JSONString = JSON.stringify(JSONAddresses)
     fs.writeFileSync('addresses.json', JSONString)
-    fs.writeFileSync(`${network}-addresses.json`, JSON.stringify(addresses))
     console.log(`Wrote new addresses on network ${network} to addresses.json`)
+    const networkFilename = `${network}-addresses.json`
+    fs.writeFileSync(`${networkFilename}`, JSON.stringify(addresses))
+    console.log(`Wrote new addresses on network ${network} to ${networkFilename}`)
 }
 
 function writeABIs(contractNames: string[]) {
@@ -60,7 +55,7 @@ function writeABIs(contractNames: string[]) {
 
 async function main() {
     const network = (process.env.NETWORK ? process.env.NETWORK : "http://127.0.0.1:8545/")
-    const signer: ethers.Wallet = getWallet(network)
+    const signer = (await ethers.getSigners())[0]
 
     const ERC20MintableFactory = new ERC20Mintable__factory(signer)
     const RoyaltiesFactory = new Royalties__factory(signer)

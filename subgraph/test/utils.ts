@@ -14,16 +14,15 @@ const ALICE_PK = process.env.PK ? process.env.PK : '0xac0974bec39a17e36ba4a6b4d2
 const SQUAD_NFT_ADDR = addresses.local.ERC721Squad.toLowerCase()
 const FDAI_ADDR = addresses.local.ERC20Mintable.toLowerCase()
 const ROYALTIES_ADDR = addresses.local.Royalties.toLowerCase()
+const PERCENTAGE_SCALE = 10e5
+const ALICE_ALLOC = ethers.BigNumber.from(50 * PERCENTAGE_SCALE)
+
 export const PURCHASABLE_LM_ADDR = addresses.local.PurchasableLicenseManager.toLowerCase()
 export const REV_SHARE_LM_ADDR = addresses.local.RevShareLicenseManager.toLowerCase()
 export const DEF_PRICE = ethers.utils.parseEther('10')
 export const DEF_SHARE = 50
 
 const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/')
-export const alice = new ethers.Wallet(
-  ALICE_PK, 
-  provider
-)
 
 const squadNft = new ethers.Contract(
   SQUAD_NFT_ADDR,
@@ -50,11 +49,32 @@ const fDai = new ethers.Contract(
   ERC20Abi,
   provider
 )
-const aliceRoyalties = royalties.connect(alice)
-const alicePlm = purchasableLicenseManager.connect(alice)
-const aliceRslm = revShareLicenseManager.connect(alice)
-const aliceNft = squadNft.connect(alice)
-const aliceFDai = fDai.connect(alice)
+
+export async function getSigner() {
+  const signer = await provider.getSigner()
+  return signer
+}
+
+export async function getAddress() {
+  const signer = await getSigner()
+  return await signer.getAddress()
+}
+
+const getAliceRoyalties = async () => {
+  return royalties.connect(await getSigner())
+}
+const getAlicePlm = async () => {
+  return purchasableLicenseManager.connect(await getSigner())
+}
+const getAliceRslm = async () => {
+  return revShareLicenseManager.connect(await getSigner())
+}
+const getAliceNft = async () => {
+  return squadNft.connect(await getSigner())
+}
+const getAliceFDai = async () => {
+  return fDai.connect(await getSigner())
+}
 
 interface TokenData {
   contentURI: string,
@@ -81,9 +101,10 @@ export function delay(ms: number) {
 }
 
 export async function mint(): Promise<NFT> {
+  const aliceNft = await getAliceNft()
   const id = await aliceNft.nextTokenId()
   const tx = await aliceNft.mint(
-    alice.address, 
+    await getAddress(), 
     defTokenData.contentURI,
     defTokenData.metadataURI,
     defTokenData.contentHash,
@@ -99,10 +120,12 @@ export async function mint(): Promise<NFT> {
 }
 
 export async function registerPL(nft: NFT, price: ethers.BigNumber, share: number) {
-  await alicePlm.registerNFT(nft.address, nft.id, alice.address, price, share)
+  const alicePlm = await getAlicePlm()
+  await alicePlm.registerNFT(nft.address, nft.id, await getAddress(), price, share)
 }
 
 export async function unregisterPL(nft: NFT) {
+  const alicePlm = await getAlicePlm()
   await alicePlm.unregisterNFT(nft.address, nft.id)
   await delay(5000)
 }
@@ -115,10 +138,12 @@ export async function mintAndRegisterPL(): Promise<NFT> {
 }
 
 export async function registerRSL(nft: NFT, share: number) {
-  await aliceRslm.registerNFT(nft.address, nft.id, alice.address, share)
+  const aliceRslm = await getAliceRslm()
+  await aliceRslm.registerNFT(nft.address, nft.id, await getAddress(), share)
 }
 
 export async function unregisterRSL(nft: NFT) {
+  const aliceRslm = await getAliceRslm()
   await aliceRslm.unregisterNFT(nft.address, nft.id)
   await delay(5000)
 }
@@ -139,33 +164,22 @@ export async function getRevShareLicense(nft: NFT): Promise<any> {
 }
 
 export async function mintDaiAndPurchase(nft: NFT, price: ethers.BigNumber): Promise<number> {
-  await aliceFDai.mint(alice.address, price)
+  const aliceFDai = await getAliceFDai()
+  await aliceFDai.mint(await getAddress(), price)
   await aliceFDai.approve(purchasableLicenseManager.address, price)
-  const tx = await alicePlm.purchase(nft.address, nft.id, alice.address, 1)
+  const alicePlm = await getAlicePlm()
+  const tx = await alicePlm.purchase(nft.address, nft.id, await getAddress(), 1)
   const res = await tx.wait()
   await delay(5000)
   return res.blockNumber
 }
 
-const PERCENTAGE_SCALE = 10e5
-const ALICE_ALLOC = ethers.BigNumber.from(50 * PERCENTAGE_SCALE)
-const balances = [
-  {
-    account: alice.address,
-    allocation: ALICE_ALLOC
-  },
-  {
-    account: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
-    allocation: ALICE_ALLOC
-  }
-]
-const balanceTree: BalanceTree = new BalanceTree(balances)
-export const ROOT = balanceTree.getHexRoot()
-const PROOF = balanceTree.getHexProof(alice.address, ALICE_ALLOC)
-
 export async function mintAndIncrement(): Promise<number> {
+  const proofInfo = await getProofInfo()
+  const aliceFDai = await getAliceFDai()
   await aliceFDai.mint(ROYALTIES_ADDR, DEF_PRICE)
-  const tx = await aliceRoyalties.incrementWindow(ROOT)
+  const aliceRoyalties = await getAliceRoyalties()
+  const tx = await aliceRoyalties.incrementWindow(proofInfo.ROOT)
   const res = await tx.wait()
   await delay(5000)
   return res.blockNumber
@@ -189,12 +203,31 @@ interface ClaimRes {
   res: any
 }
 
+export async function getProofInfo () {
+  const balances = [
+    {
+      account: await getAddress(),
+      allocation: ALICE_ALLOC
+    },
+    {
+      account: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+      allocation: ALICE_ALLOC
+    }
+  ]
+  const balanceTree: BalanceTree = new BalanceTree(balances)
+  const ROOT = balanceTree.getHexRoot()
+  const PROOF = balanceTree.getHexProof(await getAddress(), ALICE_ALLOC)
+  return { ROOT, PROOF }
+}
+
 export async function claim(windowIndex: number): Promise<ClaimRes> {
+  const aliceRoyalties = await getAliceRoyalties()
+  const proofInfo = await getProofInfo()
   const tx = await aliceRoyalties.claim(
     windowIndex,
-    alice.address,
+    await getAddress(),
     Number(ALICE_ALLOC),
-    PROOF
+    proofInfo.PROOF
   )
   const res = await tx.wait()
   await delay(5000)
@@ -230,7 +263,6 @@ export async function querySquadNFT(nft: NFT) {
 
 export async function queryContent(nft: NFT) {
   const contentId = makeContentId(nft)
-  // console.log('querying content id: ', contentId)
   const query = `{
     content(id: "${contentId}") {
       id
@@ -249,7 +281,6 @@ export async function queryContent(nft: NFT) {
 
 export async function queryPurchasableLicenses(nft: NFT, licenseManagerAddress: string) {
   const contentId = makeContentId(nft)
-  // console.log('querying content id: ', contentId)
   const query = `{
     content(id: "${contentId}") {
       purchasableLicenses(licenseManagerAddress: "${licenseManagerAddress}") {

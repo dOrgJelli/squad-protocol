@@ -11,8 +11,8 @@
 
 import { assert } from 'chai'
 import {
-  ROOT,
-  alice,
+  getProofInfo,
+  getAddress,
   queryWindow,
   queryTransfer,
   mintAndIncrement,
@@ -29,7 +29,8 @@ async function checkWindow(): Promise<number> {
   const id = '0x' + index.toString(16)
   const window = await queryWindow(id)
   const balanceForWindow = await getBalanceForWindow(index)
-  
+
+  const { ROOT } = await getProofInfo()
   assert.equal(window.index, index, 'index')
   assert.equal(window.merkleRoot, ROOT, 'root')
   assert.equal(window.fundsAvailable, balanceForWindow.toString(), 'total claimable')
@@ -53,7 +54,8 @@ describe('Royalties mapping', function () {
     const claimAmount = 5000000000000000000
     const afterTotalClaimable = beforeTotalClaimable - claimAmount
 
-    assert.equal(transfer.to, alice.address.toLowerCase(), 'to')
+    const aliceAddress = await getAddress()
+    assert.equal(transfer.to, aliceAddress.toLowerCase(), 'to')
     assert.equal(transfer.amount, claimAmount.toString(), 'amount')
     assert.equal(transfer.totalClaimableBalance, afterTotalClaimable, 'total')
     assert.equal(transfer.blockNumber, claimRes.res.blockNumber, 'block number')

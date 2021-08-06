@@ -27,7 +27,7 @@ import {
   getPurchasableLicense,
   makeContentId,
   makeLicenseId,
-  alice,
+  getAddress,
   mintAndRegisterPL,
   registerPL,
   unregisterPL,
@@ -40,14 +40,14 @@ async function checkNftRegistrationPL(nft: NFT, price: ethers.BigNumber, share: 
   const licenses = await queryPurchasableLicenses(nft, PURCHASABLE_LM_ADDR)
   const license = licenses[0]
   const licenseTokenAddr: string = (await getPurchasableLicense(nft)).licenseToken.toLowerCase()
-
+  const aliceAddress = await getAddress()
   assert.equal(content.id, makeContentId(nft), 'content id')
   assert.equal(content.nftAddress, nft.address, 'content nft address')
   assert.equal(content.nftId, nft.id, 'content nft id')
   assert.equal(license.id, makeLicenseId(nft, PURCHASABLE_LM_ADDR), 'license id')
   assert.equal(license.licenseManagerAddress, PURCHASABLE_LM_ADDR, 'license manager address')
   assert.equal(license.licenseTokenAddress, licenseTokenAddr, 'license token address')
-  assert.equal(license.registrant, alice.address.toLowerCase(), 'license registrant')
+  assert.equal(license.registrant, aliceAddress.toLowerCase(), 'license registrant')
   assert.equal(license.price, price, 'license price')
   assert.equal(license.sharePercentage, share, 'license share percentage')
 }
@@ -83,11 +83,14 @@ describe('PurchasableLicenseManager mapping', function () {
     await checkNftRegistrationPL(nft, DEF_PRICE, DEF_SHARE)
     const blockNumber = await mintDaiAndPurchase(nft, DEF_PRICE)
     const purchase = (await queryPurchases(nft, PURCHASABLE_LM_ADDR))[0]
-    const licenseTokenAddr: string = (await getPurchasableLicense(nft)).licenseToken.toLowerCase()
+    const licenseTokenAddr: string = (
+      await getPurchasableLicense(nft)
+    ).licenseToken.toLowerCase()
+    const aliceAddress = await getAddress()
     assert.equal(purchase.licenseTokenAddress, licenseTokenAddr, 'license token address')
     assert.equal(purchase.licensesBought, '1', 'licenses bought')
     assert.equal(purchase.pricePaid, DEF_PRICE, 'price paid')
-    assert.equal(purchase.purchaser, alice.address.toLowerCase(), 'purchaser')
+    assert.equal(purchase.purchaser, aliceAddress.toLowerCase(), 'purchaser')
     assert.equal(purchase.blockNumber, blockNumber, 'block number')
   })
 })

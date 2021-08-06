@@ -58,7 +58,7 @@ describe('ERC721Squad', () => {
         const signers = await ethers.getSigners()
         owner = signers[0]
         alice = signers[1]
-
+  
         const ERC721SquadFactory = new ERC721Squad__factory(owner)
         squadNft = await ERC721SquadFactory.deploy('Squad NFT', 'sNFT')
     })
