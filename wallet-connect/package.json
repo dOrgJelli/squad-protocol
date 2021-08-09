@@ -1,0 +1,17 @@
+{
+  "name": "@squad/wallet-connect",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "ts-node index"
+  },
+  "dependencies": {
+    "@walletconnect/web3-provider": "^1.5.2",
+    "ethers": "^5.1.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
+}
