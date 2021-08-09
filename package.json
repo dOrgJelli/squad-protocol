@@ -10,7 +10,8 @@
   "workspaces": [
     "hardhat",
     "polywrap",
-    "subgraph"
+    "subgraph",
+    "wallet-connect"
   ],
   "scripts": {
 
