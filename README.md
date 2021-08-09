@@ -4,8 +4,22 @@ Monorepo for Squad protocol contracts, subgraph, and APIs
 # Local Dev Environment
 
 Before you start, install the dependencies in the root of the project
+and create your secrets file.
 
 `$ yarn`
+
+create a file in your home folder called `.squad-secrets.json`. Look
+in `hardhat.config.ts` for more details about what it'll need, but you
+can start by adding something like this
+
+```
+{
+        "ropsten": {
+                   "privateKey": "...",
+                   "alchemyApiKey": "...",
+        }
+}
+```
 
 To stand up a **full local dev environment**
 

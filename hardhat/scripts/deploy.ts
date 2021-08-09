@@ -1,10 +1,13 @@
-import { ethers } from 'hardhat'
+import hre from 'hardhat'
 import fs from 'fs'
 import { ERC20Mintable__factory } from '../typechain/factories/ERC20Mintable__factory'
 import { Royalties__factory } from '../typechain/factories/Royalties__factory'
 import { ERC721Squad__factory } from '../typechain/factories/ERC721Squad__factory'
 import { RevShareLicenseManager__factory } from '../typechain/factories/RevShareLicenseManager__factory'
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
+
+const ethers = hre.ethers
+const network = hre.network
 
 interface Addresses {
     ERC20Mintable?: string,
@@ -26,7 +29,6 @@ interface Addresses {
  * The individual network files make things nice for test automation
  */
 function recordAddresses(addresses: Addresses, network: string) {
-    if (network == "http://127.0.0.1:8545/" || "http://localhost:8545/") { network = "local" }
     let JSONAddresses
     try {
         JSONAddresses = JSON.parse(fs.readFileSync('addresses.json').toString())
@@ -40,6 +42,39 @@ function recordAddresses(addresses: Addresses, network: string) {
     const networkFilename = `${network}-addresses.json`
     fs.writeFileSync(`${networkFilename}`, JSON.stringify(addresses))
     console.log(`Wrote new addresses on network ${network} to ${networkFilename}`)
+}
+
+// TODO consider moving this to it's own version management/release library
+interface SemVer {
+  major: bigint,
+  minor: bigint,
+  patch: bigint,
+  preRelease?: string,
+  build?: string
+}
+
+interface Release {
+  version: SemVer,
+  network: string,
+  addresses: Addresses
+}
+
+function formatSemVer(v: SemVer): string {
+  let versionString: string = `${v.major}-${v.minor}-${v.patch}`
+  if (v.preRelease !== undefined) {
+    versionString = `${versionString}-${v.preRelease}`
+  }
+  if(v.build !== undefined) {
+    versionString = `${versionString}+${v.build}`
+  }
+  return versionString
+}
+
+function writeReleaseInfo(release: Release) {
+  fs.writeFileSync(
+    `../../releases/${formatSemVer(release.version)}.json`,
+    JSON.stringify(release)
+  )
 }
 
 function writeABIs(contractNames: string[]) {

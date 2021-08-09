@@ -1,6 +1,6 @@
 {
   "name": "squad-protocol",
-  "version": "0.0.0",
+  "version": "0.0.1-dev",
   "description": "Protocol for publishing and licensing IP using blockchain",
   "main": "index.js",
   "repository": "git@github.com:SquadGames/squad-protocol.git",
@@ -15,7 +15,7 @@
   ],
   "scripts": {
 
-    "up": "yarn polywrap:up && yarn subgraph:up && yarn hardhat:deploy:local && yarn link-deps && yarn polywrap:deploy:local && yarn subgraph:deploy:local",
+    "up": "yarn polywrap:up && yarn subgraph:up && yarn release:dev",
 
     "down": "yarn down:polywrap && yarn down:subgraph && yarn clean:volumes",
     "down:polywrap": "yarn workspace @squad/polywrap test:env:down",
@@ -37,6 +37,11 @@
     "test": "yarn test:hardhat && yarn test:polywrap && yarn test:subgraph",
     "test:hardhat": "yarn workspace @squad/hardhat test",
     "test:polywrap": "yarn workspace @squad/polywrap test",
-    "test:subgraph": "yarn workspace @squad/subgraph test"
+    "test:subgraph": "yarn workspace @squad/subgraph test",
+
+    "release:dev": "yarn hardhat:deploy:local && yarn link-deps && yarn polywrap:deploy:local && yarn subgraph:deploy:local",
+    "release:integration": "echo 'integration release not implemented'",
+    "release:staging": "echo 'staging release not implmeneted'",
+    "release:production": "echo 'production release not implemented'"
   }
 }
