@@ -10,7 +10,6 @@
     "test": "hardhat compile && hardhat test",
     "test:local": "yarn deploy:local && hardhat --network localhost test"
   },
-  "dependencies": {},
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",

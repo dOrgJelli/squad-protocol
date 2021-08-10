@@ -15,7 +15,7 @@
   ],
   "scripts": {
 
-    "up": "yarn polywrap:up && yarn subgraph:up && yarn release:dev",
+    "up": "yarn polywrap:up && yarn subgraph:up && yarn release:dev && yarn todos",
 
     "down": "yarn down:polywrap && yarn down:subgraph && yarn clean:volumes",
     "down:polywrap": "yarn workspace @squad/polywrap test:env:down",
@@ -31,13 +31,15 @@
     "subgraph:deploy:local": "yarn workspace @squad/subgraph build:all && yarn workspace @squad/subgraph deploy:local",
 
     "link-deps": "yarn link-deps:polywrap && yarn link-deps:subgraph",
-    "link-deps:polywrap": "ln -sf ../../hardhat/local-addresses.json ./polywrap/recipes/constants.json",
+    "link-deps:polywrap": "ln -sf ../../hardhat/localhost-addresses.json ./polywrap/recipes/constants.json",
     "link-deps:subgraph": "ln -sf ../../hardhat/addresses.json ./subgraph/config/addresses.json",
 
     "test": "yarn test:hardhat && yarn test:polywrap && yarn test:subgraph",
-    "test:hardhat": "yarn workspace @squad/hardhat test",
+    "test:hardhat": "yarn workspace @squad/hardhat test:local",
     "test:polywrap": "yarn workspace @squad/polywrap test",
     "test:subgraph": "yarn workspace @squad/subgraph test",
+
+    "todos": "git grep TODO ':!package.json'",
 
     "release:dev": "yarn hardhat:deploy:local && yarn link-deps && yarn polywrap:deploy:local && yarn subgraph:deploy:local",
     "release:integration": "echo 'integration release not implemented'",

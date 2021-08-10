@@ -1,4 +1,4 @@
-import hre from 'hardhat'
+import { ethers, network } from 'hardhat'
 import fs from 'fs'
 import { ERC20Mintable__factory } from '../typechain/factories/ERC20Mintable__factory'
 import { Royalties__factory } from '../typechain/factories/Royalties__factory'
@@ -6,8 +6,7 @@ import { ERC721Squad__factory } from '../typechain/factories/ERC721Squad__factor
 import { RevShareLicenseManager__factory } from '../typechain/factories/RevShareLicenseManager__factory'
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
 
-const ethers = hre.ethers
-const network = hre.network
+const VERSION_PATH = "../../version.json"
 
 interface Addresses {
     ERC20Mintable?: string,
@@ -44,11 +43,11 @@ function recordAddresses(addresses: Addresses, network: string) {
     console.log(`Wrote new addresses on network ${network} to ${networkFilename}`)
 }
 
-// TODO consider moving this to it's own version management/release library
+// TODO move release stuff to it's own version management/release library?
 interface SemVer {
-  major: bigint,
-  minor: bigint,
-  patch: bigint,
+  major: number,
+  minor: number,
+  patch: number,
   preRelease?: string,
   build?: string
 }
@@ -59,8 +58,66 @@ interface Release {
   addresses: Addresses
 }
 
+function getVersion(path: string): SemVer {
+  if (!fs.existsSync(path)) {
+    return { major: 0, minor: 0, patch: 0 }
+  }
+  return JSON.parse(fs.readFileSync(path).toString())
+}
+
+function saveVersion(v: SemVer, path: string) {
+  fs.writeFileSync(path, JSON.stringify(v))
+}
+
+// bump the version up one. Level may be "build", "major", "minor", or
+// "patch" A build bump does not bump the major, minor, or patch
+// version but replaces the preRelease and build strings
+function bumpVersion(level: string, path: string, preRelease?: string, build?: string) {
+  let v = getVersion(VERSION_PATH)
+  const oldVersionString = formatSemVer(v)
+  switch(level) {
+    case "major": {
+      v.major += 1
+      v.minor = 0
+      v.patch = 0
+      v.preRelease = preRelease
+      v.build = build
+      break
+    }
+    case "minor": {
+      v.minor += 1
+      v.patch = 0
+      v.preRelease = preRelease
+      v.build = build
+      break
+    }
+    case "patch": {
+      v.patch += 1
+      v.preRelease = preRelease
+      v.build = build
+      break
+    }
+    case "build": {
+      v.preRelease = preRelease
+      v.build = build
+      break
+    }
+    default: {
+      throw new Error(
+        `expected bump level of 'major', 'minor', or 'patch' got '${level}'`
+      )
+      break
+    }
+  }
+  const newVersionString = formatSemVer(v)
+  console.log(
+    `bumping version from ${oldVersionString} to ${newVersionString}`
+  )
+  saveVersion(v, path)
+}
+
 function formatSemVer(v: SemVer): string {
-  let versionString: string = `${v.major}-${v.minor}-${v.patch}`
+  let versionString: string = `${v.major}.${v.minor}.${v.patch}`
   if (v.preRelease !== undefined) {
     versionString = `${versionString}-${v.preRelease}`
   }
@@ -70,11 +127,16 @@ function formatSemVer(v: SemVer): string {
   return versionString
 }
 
+// TODO factor release management into a package
 function writeReleaseInfo(release: Release) {
-  fs.writeFileSync(
-    `../../releases/${formatSemVer(release.version)}.json`,
-    JSON.stringify(release)
-  )
+  const path =
+    `../releases/${network.name}_${formatSemVer(release.version)}.json`
+  const latestPath = `../releases/${network.name}_latest.json`
+  fs.writeFileSync(path, JSON.stringify(release))
+  if (fs.existsSync(latestPath)) {
+    fs.unlinkSync(latestPath)
+  }
+  fs.symlinkSync(path, latestPath)
 }
 
 function writeABIs(contractNames: string[]) {
@@ -89,7 +151,6 @@ function writeABIs(contractNames: string[]) {
 }
 
 async function main() {
-    const network = (process.env.NETWORK ? process.env.NETWORK : "http://127.0.0.1:8545/")
     const signer = (await ethers.getSigners())[0]
 
     const ERC20MintableFactory = new ERC20Mintable__factory(signer)
@@ -99,6 +160,7 @@ async function main() {
     const PurchasableLicenseManagerFactory = new PurchasableLicenseManager__factory(signer)
 
     // only when deploying to local network or test networks
+    // TODO what do we do for the ERC20 address when not using fake DAI?
     const erc20 = await ERC20MintableFactory.deploy('Fake DAI', 'fDAI')
     console.log(`fDai deployed to ${erc20.address}`)
 
@@ -129,7 +191,17 @@ async function main() {
         RevShareLicenseManager: revShareLicenseManager.address,
         PurchasableLicenseManager: purchasableLicenseManager.address
     }
-    recordAddresses(addresses, network)
+
+    let version = getVersion(VERSION_PATH)
+    bumpVersion("build", VERSION_PATH, version.preRelease,
+                `build-${Date.now()}`)
+    const release: Release = {
+      version: getVersion(VERSION_PATH),
+      network: network.name,
+      addresses
+    }
+    writeReleaseInfo(release)
+    recordAddresses(addresses, network.name)
 
     writeABIs([
         "ERC20Mintable",

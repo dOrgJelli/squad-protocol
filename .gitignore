@@ -7,6 +7,7 @@ hardhat/artifacts/*
 hardhat/cache
 hardhat/typechain
 hardhat/typechain/*
+hardhat/localhost-addresses.json
 
 subgraph/build
 subgraph/generated
@@ -14,3 +15,4 @@ subgraph/data
 
 yarn-error.log
 
+releases/local*
