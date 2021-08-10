@@ -48,7 +48,7 @@ describe('PurchasableLicenseManager', () => {
     async function mintNFT() {
         const nftAlice = squadNft.connect(alice)
         await nftAlice.mint(
-            await alice.getAddress(), 
+            await alice.getAddress(),
             tokenData.contentURI,
             tokenData.metadataURI,
             tokenData.contentHash,
@@ -90,7 +90,7 @@ describe('PurchasableLicenseManager', () => {
                 50
             ))
                 .to.emit(purchasableLicense, 'NFTRegistered')
-            
+
             const licenseParams = await purchasableLicense.registeredNFTs(squadNft.address, 0)
 
             // price
@@ -103,14 +103,14 @@ describe('PurchasableLicenseManager', () => {
             const licenseToken = erc20.attach(licenseParams[2])
             const balance = await licenseToken.balanceOf(await alice.getAddress())
             assert.equal(
-                Number(balance), 
+                Number(balance),
                 0
             )
         })
 
         it('replaces an old license for the same NFT', async () => {
             await mintNFT()
-    
+
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
@@ -119,17 +119,9 @@ describe('PurchasableLicenseManager', () => {
                 50
             ))
                 .to.emit(purchasableLicense, 'NFTRegistered')
-                .withArgs(
-                    squadNft.address,
-                    0,
-                    await alice.getAddress(),
-                    ethers.utils.parseEther('10'),
-                    ethers.BigNumber.from(50),
-                    '0x763e69d24a03c0c8B256e470D9fE9e0753504D07'
-                )
-    
+
             const firstLicenseParams = await purchasableLicense.registeredNFTs(squadNft.address, 0)
-    
+
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
@@ -138,30 +130,22 @@ describe('PurchasableLicenseManager', () => {
                 51
             ))
                 .to.emit(purchasableLicense, 'NFTRegistered')
-                .withArgs(
-                    squadNft.address,
-                    0,
-                    await alice.getAddress(),
-                    ethers.utils.parseEther('11'),
-                    ethers.BigNumber.from(51),
-                    '0x46682cA783d96a4A65390211934D5714CDb788E4'
-              )
-              
+
             const licenseParams = await purchasableLicense.registeredNFTs(squadNft.address, 0)
-    
+
             // price
             assert.equal(Number(licenseParams[0]), Number(ethers.utils.parseEther('11')))
-    
+
             // share percentage
             assert.equal(Number(licenseParams[1]), 51)
-    
+
             // license token
             assert.notEqual(licenseParams[2], firstLicenseParams[2])
         })
 
         it('fails if sharePercentage is greater than 100', async () => {
             await mintNFT()
-    
+
             await expect(licenseAlice.registerNFT(
                 squadNft.address,
                 0,
@@ -174,7 +158,7 @@ describe('PurchasableLicenseManager', () => {
 
         it('fails if registrant does not own the NFT', async () => {
             await mintNFT()
-    
+
             await expect(purchasableLicense.registerNFT(
                 squadNft.address,
                 0,
@@ -187,7 +171,7 @@ describe('PurchasableLicenseManager', () => {
     })
 
     it(
-        'on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT', 
+        'on createAndRegisterNFT, mints a new NFT to the msg.sender and calls registerNFT',
         async () => {
             await expect(purchasableLicense.createAndRegisterNFT(
                 await alice.getAddress(),
@@ -199,21 +183,15 @@ describe('PurchasableLicenseManager', () => {
                 50
             ))
                 .to.emit(purchasableLicense, 'NFTRegistered')
-                .withArgs(
-                    squadNft.address,
-                    0,
-                    await alice.getAddress(),
-                    ethers.BigNumber.from(10),
-                    ethers.BigNumber.from(50),
-                    '0x8dAF17A20c9DBA35f005b6324F493785D239719d'
-                )
-            
+
             const owner = await squadNft.ownerOf(0)
             const contentURI = await squadNft.contentURIs(0)
             const metadataURI = await squadNft.metadataURIs(0)
             assert.equal(owner, await alice.getAddress(), 'nft owner')
             assert.equal(contentURI, tokenData.contentURI, 'content URI')
             assert.equal(metadataURI, tokenData.metadataURI, 'metadata URI')
+
+            // TODO add checks that the token was created correctly
     })
 
     describe('unregisterNFT', () => {
@@ -278,16 +256,16 @@ describe('PurchasableLicenseManager', () => {
         ))[2]
 
         await expect(purchasableLicense.purchase(
-            squadNft.address, 
+            squadNft.address,
             0,
             ownerAddress,
             1
         ))
             .to.emit(purchasableLicense, 'Purchase')
             .withArgs(
-                squadNft.address, 
-                ethers.BigNumber.from(0), 
-                ownerAddress, 
+                squadNft.address,
+                ethers.BigNumber.from(0),
+                ownerAddress,
                 1,
                 ethers.utils.parseEther('10'),
                 licenseTokenAddress
@@ -319,7 +297,7 @@ describe('PurchasableLicenseManager', () => {
             await erc20.approve(purchasableLicense.address, ethers.utils.parseEther('10'))
 
             await purchasableLicense.purchase(
-                squadNft.address, 
+                squadNft.address,
                 0,
                 ownerAddress,
                 1
@@ -352,7 +330,7 @@ describe('PurchasableLicenseManager', () => {
             await erc20.approve(purchasableLicense.address, ethers.utils.parseEther('10'))
 
             await purchasableLicense.purchase(
-                squadNft.address, 
+                squadNft.address,
                 0,
                 ownerAddress,
                 1

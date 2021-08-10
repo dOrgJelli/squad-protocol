@@ -3,7 +3,12 @@
  */
 import '@typechain/hardhat'
 import '@nomiclabs/hardhat-ethers'
-import "@nomiclabs/hardhat-waffle"
+import '@nomiclabs/hardhat-waffle'
+import fs from 'fs'
+
+// TODO make secrets location configurable
+const secretsPath = `${process.env.HOME}/.squad-secrets.json`
+const config = JSON.parse(fs.readFileSync(secretsPath).toString())
 
 module.exports = {
   solidity: "0.8.5",
@@ -15,11 +20,10 @@ module.exports = {
         initialIndex: 0,
         count: 10
       }
-    }/*,
-    TODO find a good way to import secrets from outside the repo
+    },
     ropsten: {
       url: `https://eth-ropsten.alchemyapi.io/v2/${config.ropsten.alchemyApiKey}`,
-      accounts: [`0x${config.ropsten.privateKey}`]
-    }*/
+      accounts: [`${config.ropsten.privateKey}`]
+    }
   }
 }

@@ -118,10 +118,10 @@ function bumpVersion(level: string, path: string, preRelease?: string, build?: s
 
 function formatSemVer(v: SemVer): string {
   let versionString: string = `${v.major}.${v.minor}.${v.patch}`
-  if (v.preRelease !== undefined) {
+  if (v.preRelease != undefined) {
     versionString = `${versionString}-${v.preRelease}`
   }
-  if(v.build !== undefined) {
+  if(v.build != undefined) {
     versionString = `${versionString}+${v.build}`
   }
   return versionString
