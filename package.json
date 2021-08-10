@@ -14,7 +14,6 @@
     "wallet-connect"
   ],
   "scripts": {
-
     "up": "yarn polywrap:up && yarn subgraph:up && yarn hardhat:deploy:local && yarn link-deps && yarn polywrap:deploy:local && yarn subgraph:deploy:local",
 
     "down": "yarn down:polywrap && yarn down:subgraph && yarn clean:volumes",

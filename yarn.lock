@@ -1879,7 +1879,7 @@
     rimraf "3.0.2"
     ws "7.3.1"
 
-"@web3api/client-js@0.0.1-prealpha.30":
+"@web3api/client-js@0.0.1-prealpha.30", "@web3api/client-js@^0.0.1-prealpha.30":
   version "0.0.1-prealpha.30"
   resolved "https://registry.yarnpkg.com/@web3api/client-js/-/client-js-0.0.1-prealpha.30.tgz#b60a999ccb447550693bd78716ba7cbac2ce17bb"
   integrity sha512-coELa1uUFFv3ryTIgPJrDyR8b7bgpfzUpl7Al5wjtoQV6PUcr3jrxf/1ivbZ35lmlaOieJXVt/Ue0Pz7Xp4+SQ==
@@ -1928,7 +1928,7 @@
     "@web3api/core-js" "0.0.1-prealpha.30"
     ethers "5.0.7"
 
-"@web3api/ethereum-plugin-js@0.0.1-prealpha.30":
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.30", "@web3api/ethereum-plugin-js@^0.0.1-prealpha.30":
   version "0.0.1-prealpha.30"
   resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.30.tgz#e1e65fe3d036f1178f140a98ffa9cc28ce3907b4"
   integrity sha512-DxreVcE9NmRdwWwV30jYgwZqX5iaP3iqfYI/iit95n+SUhgQ0QgRYWp+CwPyG5+UMmJPWL2IZXR3obnQOMhIVw==
