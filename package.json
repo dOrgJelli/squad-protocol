@@ -11,7 +11,8 @@
     "hardhat",
     "polywrap",
     "subgraph",
-    "wallet-connect"
+    "wallet-connect",
+    "lib"
   ],
   "scripts": {
 

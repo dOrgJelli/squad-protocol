@@ -1,17 +1,17 @@
 /**
  * a full local subgraph + contracts must be deployed before running tests (see README)
- * 
+ *
  * - on TokenMinted
  *    - NFT is added to subgraph
  */
 
 import { assert } from 'chai'
-import { 
+import {
   getSigner,
   defTokenData,
-  mint, 
-  delay, 
-  querySquadNFT 
+  mint,
+  delay,
+  querySquadNFT
 } from './utils'
 
 describe('ERC721Squad mapping', function () {

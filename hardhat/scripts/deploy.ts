@@ -8,13 +8,7 @@ import { PurchasableLicenseManager__factory } from '../typechain/factories/Purch
 
 const VERSION_PATH = "../../version.json"
 
-interface Addresses {
-    ERC20Mintable?: string,
-    Royalties: string,
-    ERC721Squad: string,
-    RevShareLicenseManager: string,
-    PurchasableLicenseManager: string
-}
+import { getVersion, saveVersion, Release, SemVer, Addresses } from '@squad/lib'
 
 /*
  * Records addresses of the most recently deployed contracts by
@@ -41,32 +35,6 @@ function recordAddresses(addresses: Addresses, network: string) {
     const networkFilename = `${network}-addresses.json`
     fs.writeFileSync(`${networkFilename}`, JSON.stringify(addresses))
     console.log(`Wrote new addresses on network ${network} to ${networkFilename}`)
-}
-
-// TODO move release stuff to it's own version management/release library?
-interface SemVer {
-  major: number,
-  minor: number,
-  patch: number,
-  preRelease?: string,
-  build?: string
-}
-
-interface Release {
-  version: SemVer,
-  network: string,
-  addresses: Addresses
-}
-
-function getVersion(path: string): SemVer {
-  if (!fs.existsSync(path)) {
-    return { major: 0, minor: 0, patch: 0 }
-  }
-  return JSON.parse(fs.readFileSync(path).toString())
-}
-
-function saveVersion(v: SemVer, path: string) {
-  fs.writeFileSync(path, JSON.stringify(v))
 }
 
 // bump the version up one. Level may be "build", "major", "minor", or

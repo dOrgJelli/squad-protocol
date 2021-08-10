@@ -4,14 +4,18 @@
   "private": true,
   "version": "0.0.1-prealpha.30",
   "scripts": {
+
     "build": "yarn build:contract && yarn build:web3api",
     "build:web3api": "npx w3 build",
-    "build:contract": "node ./scripts/build-contract.js",
+
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
+
     "deploy": "yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens squadprotocol.eth",
-    "test": "npx w3 query ./recipes/e2e.json"
+    "test": "yarn constants:local && npx w3 query ./recipes/e2e.json",
+
+    "constants:local": "NETWORK=localhost node ./scripts/get-constants.js"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.30",

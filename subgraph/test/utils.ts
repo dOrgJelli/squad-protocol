@@ -1,24 +1,24 @@
 import { ethers } from 'ethers'
 import axios from 'axios'
 import BalanceTree from '../../hardhat/lib/balance-tree'
+import { getLatestRelease } from '@squad/lib'
 
 const PurchasableLicenseManagerAbi = require('../../hardhat/abis/PurchasableLicenseManager.json')
 const RevShareLicenseManagerAbi = require('../../hardhat/abis/RevShareLicenseManager.json')
 const SquadNFTAbi = require('../../hardhat/abis/ERC721Squad.json')
 const ERC20Abi = require('../../hardhat/abis/ERC20Mintable.json')
 const RoyaltiesAbi = require('../../hardhat/abis/Royalties.json')
-const addresses = require('../../hardhat/addresses.json')
 
 const APIURL = 'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
-const ALICE_PK = process.env.PK ? process.env.PK : '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
-const SQUAD_NFT_ADDR = addresses.local.ERC721Squad.toLowerCase()
-const FDAI_ADDR = addresses.local.ERC20Mintable.toLowerCase()
-const ROYALTIES_ADDR = addresses.local.Royalties.toLowerCase()
+const release = getLatestRelease("localhost", "../releases")
+const SQUAD_NFT_ADDR = release.addresses.ERC721Squad.toLowerCase()
+const FDAI_ADDR = release.addresses.ERC20Mintable?.toLowerCase() ?? ""
+const ROYALTIES_ADDR = release.addresses.Royalties.toLowerCase()
 const PERCENTAGE_SCALE = 10e5
 const ALICE_ALLOC = ethers.BigNumber.from(50 * PERCENTAGE_SCALE)
 
-export const PURCHASABLE_LM_ADDR = addresses.local.PurchasableLicenseManager.toLowerCase()
-export const REV_SHARE_LM_ADDR = addresses.local.RevShareLicenseManager.toLowerCase()
+export const PURCHASABLE_LM_ADDR = release.addresses.PurchasableLicenseManager.toLowerCase()
+export const REV_SHARE_LM_ADDR = release.addresses.RevShareLicenseManager.toLowerCase()
 export const DEF_PRICE = ethers.utils.parseEther('10')
 export const DEF_SHARE = 50
 
@@ -29,6 +29,7 @@ const squadNft = new ethers.Contract(
   SquadNFTAbi,
   provider
 )
+
 const royalties = new ethers.Contract(
   ROYALTIES_ADDR,
   RoyaltiesAbi,
@@ -104,7 +105,7 @@ export async function mint(): Promise<NFT> {
   const aliceNft = await getAliceNft()
   const id = await aliceNft.nextTokenId()
   const tx = await aliceNft.mint(
-    await getAddress(), 
+    await getAddress(),
     defTokenData.contentURI,
     defTokenData.metadataURI,
     defTokenData.contentHash,
@@ -112,7 +113,7 @@ export async function mint(): Promise<NFT> {
   )
   const res = await tx.wait()
   const nft: NFT = {
-    address: squadNft.address.toLowerCase(), 
+    address: squadNft.address.toLowerCase(),
     id: id,
     blockCreated: res.blockNumber
   }
@@ -238,7 +239,7 @@ export async function claim(windowIndex: number): Promise<ClaimRes> {
 
 export function makeContentId(nft: NFT): string {
   let id = nft.id.toHexString()
-  // BigNumber.toHexString always has at least two characters (01), but we want 
+  // BigNumber.toHexString always has at least two characters (01), but we want
   // one character when id is less than 10
   if (id[2] == "0") { id = id.slice(0,2)+id.slice(3) }
   return `${nft.address}-${id}`.toLowerCase()
@@ -361,7 +362,7 @@ export async function queryTransfer(hash: string | undefined) {
   if (!hash) { throw 'Hash was undefined' }
   const query = `{
     transfer(id: "${hash}") {
-      id 
+      id
       to
       amount
       totalClaimableBalance
