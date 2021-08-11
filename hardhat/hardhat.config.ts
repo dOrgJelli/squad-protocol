@@ -7,8 +7,8 @@ import '@nomiclabs/hardhat-waffle'
 import fs from 'fs'
 
 // TODO make secrets location configurable
-const secretsPath = `${process.env.HOME}/.squad-secrets.json`
-const config = JSON.parse(fs.readFileSync(secretsPath).toString())
+//const secretsPath = `${process.env.HOME}/.squad-secrets.json`
+//const config = JSON.parse(fs.readFileSync(secretsPath).toString())
 
 module.exports = {
   solidity: "0.8.5",
@@ -20,10 +20,10 @@ module.exports = {
         initialIndex: 0,
         count: 10
       }
-    },
-    ropsten: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${config.ropsten.alchemyApiKey}`,
-      accounts: [`${config.ropsten.privateKey}`]
-    }
+    }//,
+//    ropsten: {
+//      url: `https://eth-ropsten.alchemyapi.io/v2/${config.ropsten.alchemyApiKey}`,
+//      accounts: [`${config.ropsten.privateKey}`]
+//    }
   }
 }

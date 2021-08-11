@@ -6,110 +6,23 @@ import { ERC721Squad__factory } from '../typechain/factories/ERC721Squad__factor
 import { RevShareLicenseManager__factory } from '../typechain/factories/RevShareLicenseManager__factory'
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
 
-const VERSION_PATH = "../../version.json"
-
-import { getVersion, saveVersion, Release, SemVer, Addresses } from '@squad/lib'
-
-/*
- * Records addresses of the most recently deployed contracts by
- * network This is used by polywrap tests and other future processes
- * to connect to deployed contracts.
- *
- * A json file for each network is produced at
- * {network}-addresses.json as well as an aggregate file
- * addresses.json with a mapping from network -> addresses object
- *
- * The individual network files make things nice for test automation
- */
-function recordAddresses(addresses: Addresses, network: string) {
-    let JSONAddresses
-    try {
-        JSONAddresses = JSON.parse(fs.readFileSync('addresses.json').toString())
-    } catch (err) {
-        JSONAddresses = {}
-    }
-    JSONAddresses[network] = addresses
-    const JSONString = JSON.stringify(JSONAddresses)
-    fs.writeFileSync('addresses.json', JSONString)
-    console.log(`Wrote new addresses on network ${network} to addresses.json`)
-    const networkFilename = `${network}-addresses.json`
-    fs.writeFileSync(`${networkFilename}`, JSON.stringify(addresses))
-    console.log(`Wrote new addresses on network ${network} to ${networkFilename}`)
-}
-
-// bump the version up one. Level may be "build", "major", "minor", or
-// "patch" A build bump does not bump the major, minor, or patch
-// version but replaces the preRelease and build strings
-function bumpVersion(level: string, path: string, preRelease?: string, build?: string) {
-  let v = getVersion(VERSION_PATH)
-  const oldVersionString = formatSemVer(v)
-  switch(level) {
-    case "major": {
-      v.major += 1
-      v.minor = 0
-      v.patch = 0
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "minor": {
-      v.minor += 1
-      v.patch = 0
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "patch": {
-      v.patch += 1
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "build": {
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    default: {
-      throw new Error(
-        `expected bump level of 'major', 'minor', or 'patch' got '${level}'`
-      )
-      break
-    }
-  }
-  const newVersionString = formatSemVer(v)
-  console.log(
-    `bumping version from ${oldVersionString} to ${newVersionString}`
-  )
-  saveVersion(v, path)
-}
-
-function formatSemVer(v: SemVer): string {
-  let versionString: string = `${v.major}.${v.minor}.${v.patch}`
-  if (v.preRelease != undefined) {
-    versionString = `${versionString}-${v.preRelease}`
-  }
-  if(v.build != undefined) {
-    versionString = `${versionString}+${v.build}`
-  }
-  return versionString
-}
-
-// TODO factor release management into a package
-function writeReleaseInfo(release: Release) {
-  const path =
-    `../releases/${network.name}_${formatSemVer(release.version)}.json`
-  const latestPath = `../releases/${network.name}_latest.json`
-  fs.writeFileSync(path, JSON.stringify(release))
-  if (fs.existsSync(latestPath)) {
-    fs.unlinkSync(latestPath)
-  }
-  fs.symlinkSync(path, latestPath)
-}
+import {
+  getVersion,
+  saveVersion,
+  Release,
+  SemVer,
+  Addresses,
+  bumpVersion,
+  writeReleaseInfo
+} from '@squad/lib'
 
 function writeABIs(contractNames: string[]) {
-    try { fs.mkdirSync('./abis') } catch (err) { console.log('Skipped creating /abis folder') }
-    contractNames.forEach(contractName => {
+    try {
+      fs.mkdirSync('./abis')
+    } catch (err) {
+      console.log('Skipped creating /abis folder')
+    }
+    contractNames.forEach((contractName: string) => {
         const abiJSON = JSON.parse(fs.readFileSync(
             `./artifacts/contracts/${contractName}.sol/${contractName}.json`).toString()
         ).abi
@@ -160,16 +73,15 @@ async function main() {
         PurchasableLicenseManager: purchasableLicenseManager.address
     }
 
-    let version = getVersion(VERSION_PATH)
-    bumpVersion("build", VERSION_PATH, version.preRelease,
+    let version = getVersion()
+    bumpVersion("build", version.preRelease,
                 `build-${Date.now()}`)
     const release: Release = {
-      version: getVersion(VERSION_PATH),
+      version: getVersion(),
       network: network.name,
       addresses
     }
-    writeReleaseInfo(release)
-    recordAddresses(addresses, network.name)
+    writeReleaseInfo(release, network.name)
 
     writeABIs([
         "ERC20Mintable",
@@ -185,4 +97,4 @@ main()
     .catch(error => {
         console.error(error);
         process.exit(1);
-});
+})

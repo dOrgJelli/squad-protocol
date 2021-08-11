@@ -10,6 +10,9 @@
     "test": "hardhat test",
     "test:local": "hardhat --network localhost test"
   },
+  "dependencies": {
+    "@squad/lib": "0.1.0"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -19,7 +22,6 @@
     "@types/chai": "^4.2.19",
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.12.4",
-    "@squad/lib": "^0.0.1",
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.3.0",
     "ethereumjs-util": "^7.1.0",

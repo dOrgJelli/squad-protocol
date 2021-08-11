@@ -16,7 +16,7 @@
   ],
   "scripts": {
 
-    "up": "yarn up:polywrap && yarn up:subgraph && yarn release:dev && yarn todos",
+    "up": "yarn workspace @squad/lib build && yarn up:polywrap && yarn up:subgraph && yarn release:dev && yarn todos",
     "up:polywrap": "yarn workspace @squad/polywrap test:env:up",
     "up:subgraph": "yarn workspace @squad/subgraph up:integrated",
 
