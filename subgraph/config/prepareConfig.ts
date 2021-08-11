@@ -16,7 +16,8 @@ const configJSON = {
     royaltiesAbi: "../hardhat/abis/Royalties.json"
 }
 
-// Why do we set the network to mainnet if network is local?
+// TheGraph is weird and wants to address the local network as mainnet :shrug:
+// :/
 if (network == "localhost") { configJSON.network = "mainnet" }
 
 fs.writeFileSync('./config/subgraphConfig.json', JSON.stringify(configJSON))
