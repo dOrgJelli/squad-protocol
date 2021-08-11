@@ -19,6 +19,14 @@ const genAddress = "0x543ff227f64aa17ea132bf9886cab5db55dcaddf"
  *  - that the QR code info can be customized
  */
 
+/**
+ * How to potentially connect wallet-connect and the test env:
+ * - swap ganache to be run on your local ip address instead of localhost 
+ * (maybe already being done by our docker process)
+ * - create a network in your walletconnect-valid wallet at that ip address + port
+ * - configure the WalletConnectProvider with that network as well
+ */
+
 async function main() {
   const provider = new WalletConnectProvider({
     // qrcode: false,
@@ -27,7 +35,7 @@ async function main() {
     },
     clientMeta: {
       description: "squad protocol test",
-      url: "test-url",
+      url: "squad.protocol",
       icons: ["a", "b", "c"],
       name: "Squad Protocol",
     }
@@ -50,7 +58,7 @@ async function main() {
     console.log("message:", err, payload)
   })
 
-  await provider.enable()
+  // await provider.enable()
 
   const web3provider = new ethers.providers.Web3Provider(provider)
   const signer = web3provider.getSigner()
@@ -74,7 +82,8 @@ async function main() {
         plugin: ethereumPlugin({
           networks: {
             testnet: {
-              provider: "http://localhost:8545"
+              provider: "http://localhost:8545",
+              signer: 0
             }
           },
           // If defaultNetwork is not specified, mainnet will be used.
@@ -84,26 +93,17 @@ async function main() {
       {
         uri: "/ens/ipfs.web3api.eth",
         plugin: ipfsPlugin({
-          provider: "https://ipfs.io",
-          fallbackProviders: ["https://localhost:5001"]
+          provider: "http://ipfs.io",
+          fallbackProviders: ["http://localhost:5001"]
         }),
       }
     ]
   })
   console.log("polywrap client:", client)
 
-  const GEN = ERC20__factory.connect(genAddress, signer)
-  /*
-  try {
-    await GEN.transfer("0xb4124cEB3451635DAcedd11767f004d8a28c6eE7", ethers.utils.parseEther('10'))
-  } catch (err) {
-    console.error(err)
-  }
-  */
-
   const result = await client.query({
     uri: '/ens/testnet/squadprotocol.eth',
-    query: `{
+    query: `mutation {
       approve(
         address: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
         spender: "0x3efF05A88A1d2aAb2C0bAD2c8E2FB3da0E5f1Ee9"
