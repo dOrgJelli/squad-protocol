@@ -3,7 +3,7 @@ import {
   Input_balanceOf,
   Input_allowance
 } from "./w3";
-
+import { graphNodePlugin } from "@web3api/graph-node-plugin-js"
 import { BigInt } from "@web3api/wasm-as"
 
 export function balanceOf(input: Input_balanceOf): BigInt {
@@ -24,4 +24,8 @@ export function allowance(input: Input_allowance): BigInt {
     connection: input.connection
   })
   return BigInt.fromString(res)
+}
+
+export function queryAllRegisteredContent(): String {
+  const res = 
 }

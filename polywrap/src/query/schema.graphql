@@ -13,4 +13,6 @@ type Query {
     owner: String!
     spender: String!
   ): BigInt!
+
+  queryAllRegisteredContent(): String!
 }
