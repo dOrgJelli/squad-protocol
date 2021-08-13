@@ -3,23 +3,20 @@
   "version": "0.1.0",
   "scripts": {
     "up": "yarn up:integrated",
-    "up:integrated": "docker-compose -f docker-compose-integrated.yaml up -d",
-    "up:standalone": "docker-compose -f docker-compose-standalone.yaml up -d",
+    "up:integrated": "yarn secrets && docker-compose --env-file ~/.squad/subgraph-localhost-env -f docker-compose-integrated.yaml up -d",
+    "up:standalone": "yarn secrets && docker-compose -f docker-compose-standalone.yaml up -d",
     "down": "docker-compose -f docker-compose-integrated.yaml down || docker-compose -f docker-compose-standalone.yaml down",
-
     "build": "./scripts/build.sh",
     "logs": "docker-compose -f docker-compose-integrated.yaml logs || docker-compose -f docker-compose-standalone.yaml logs",
-
     "create": "graph create squadgames/squad-POC-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create squadgames/squad-POC-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
-
     "deploy": "./scripts/deploy.sh",
-
     "test": "yarn test:one",
     "test:one": "mocha -f 'should add an NFT on TokenMinted event' -r ts-node/register ./test/*",
     "ci": "yarn test:all",
-    "test:all": "mocha -r ts-node/register ./test/*"
+    "test:all": "mocha -r ts-node/register ./test/*",
+    "secrets": "echo POSTGRES_PASSWORD=\"`cat ~/.squad/localhost-secrets.json | jq '.subgraphPostgresPassword'`\" > ~/.squad/subgraph-localhost-env"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.0",
@@ -37,6 +34,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0"
+    "babel-register": "^6.26.0",
+    "node-jq": "^2.0.0"
   }
 }
