@@ -12,35 +12,24 @@
     "polywrap",
     "subgraph",
     "wallet-connect",
-    "lib"
+    "lib",
+    "runtime-environment"
   ],
   "scripts": {
 
-    "up": "yarn workspace @squad/lib build && yarn up:polywrap && yarn up:subgraph && yarn release:dev && yarn todos",
-    "up:polywrap": "yarn workspace @squad/polywrap test:env:up",
-    "up:subgraph": "yarn workspace @squad/subgraph up:integrated",
+    "up": "./scripts/up_dev.sh && yarn build && yarn deploy",
+    "down": "./scripts/down_dev.sh",
 
-    "down": "yarn down:polywrap && yarn down:subgraph && yarn clean:volumes",
-    "down:polywrap": "yarn workspace @squad/polywrap test:env:down",
-    "down:subgraph": "yarn workspace @squad/subgraph down",
+    "build": "./scripts/build.sh",
 
-    "clean": "rm -f ./hardhat/local-addresses.json ./polywrap/recipes/constants.json && echo 'WARNING Not fully implemented, more to clean. check `docker volume ls`'",
-    "clean:volumes": "docker volume rm subgraph_postgres-volume",
-
-    "polywrap:deploy:local": "yarn workspace @squad/polywrap deploy:web3api",
-    "hardhat:deploy:local": "yarn workspace @squad/hardhat deploy:local",
-    "subgraph:deploy:local": "yarn workspace @squad/subgraph build:all && yarn workspace @squad/subgraph deploy:local",
+    "deploy": "./scripts/deploy.sh",
 
     "test": "yarn test:hardhat && yarn test:polywrap && yarn test:subgraph",
     "test:hardhat": "yarn workspace @squad/hardhat test:local",
     "test:polywrap": "yarn workspace @squad/polywrap test",
     "test:subgraph": "yarn workspace @squad/subgraph test",
 
-    "todos": "git grep TODO ':!package.json'",
+    "todos": "git grep TODO ':!package.json'"
 
-    "release:dev": "yarn hardhat:deploy:local && yarn polywrap:deploy:local && yarn subgraph:deploy:local",
-    "release:integration": "echo 'integration release not implemented'",
-    "release:staging": "echo 'staging release not implmeneted'",
-    "release:production": "echo 'production release not implemented'"
   }
 }

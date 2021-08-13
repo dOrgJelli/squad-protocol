@@ -1560,7 +1560,7 @@
     js-yaml "3.14.0"
     web-worker "1.0.0"
 
-"@web3api/client-test-env@0.0.1-prealpha.30":
+"@web3api/client-test-env@0.0.1-prealpha.30", "@web3api/client-test-env@^0.0.1-prealpha.30":
   version "0.0.1-prealpha.30"
   resolved "https://registry.yarnpkg.com/@web3api/client-test-env/-/client-test-env-0.0.1-prealpha.30.tgz#2642ded4340cc10293f21a8a084a3a2f678f9e18"
   integrity sha512-ECXkPOahYfKK4qnkqBsv9mDXW7cH4GP/Fq9y/IDAU5xonGHMV/aZy5CGdB3NIRLnhsDcpoV4/sjTyOqHqqVrvA==
@@ -2036,9 +2036,9 @@ assemblyscript@0.19.1:
     binaryen "101.0.0-nightly.20210527"
     long "^4.0.0"
 
-"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3":
+"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#v0.6":
   version "0.6.0"
-  resolved "git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3"
+  resolved "git+https://github.com/AssemblyScript/assemblyscript.git#3ed76a97f05335504166fce1653da75f4face28f"
   dependencies:
     "@protobufjs/utf8" "^1.1.0"
     binaryen "77.0.0-nightly.20190407"
@@ -2047,9 +2047,9 @@ assemblyscript@0.19.1:
     opencollective-postinstall "^2.0.0"
     source-map-support "^0.5.11"
 
-"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#v0.6":
+"assemblyscript@https://github.com/AssemblyScript/assemblyscript#36040d5b5312f19a025782b5e36663823494c2f3":
   version "0.6.0"
-  resolved "git+https://github.com/AssemblyScript/assemblyscript.git#3ed76a97f05335504166fce1653da75f4face28f"
+  resolved "https://github.com/AssemblyScript/assemblyscript#36040d5b5312f19a025782b5e36663823494c2f3"
   dependencies:
     "@protobufjs/utf8" "^1.1.0"
     binaryen "77.0.0-nightly.20190407"

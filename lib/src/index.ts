@@ -1,117 +1,58 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { homedir } from 'os'
+import { ethers } from 'ethers'
 
-const VERSION_PATH = process.env.VERSION_PATH ?? ""
-if (VERSION_PATH == "") {
-  throw new Error("could not find required config VERSION_PATH")
+export type Contract = {
+  address: string,
+  abiPath: string
 }
 
-export interface Addresses {
-    ERC20Mintable?: string,
-    Royalties: string,
-    ERC721Squad: string,
-    RevShareLicenseManager: string,
-    PurchasableLicenseManager: string
+export type ContractInfo = {
+  [index: string]: Contract
 }
 
-export interface SemVer {
-  major: number,
-  minor: number,
-  patch: number,
-  preRelease?: string,
-  build?: string
-}
-
-export interface Release {
-  version: SemVer,
+export type SquadProtocolConfig = {
   network: string,
-  addresses: Addresses
+  networkNameOrUrl: string,
+  contracts: ContractInfo
 }
 
-export function getVersion(): SemVer {
-  if (!fs.existsSync(VERSION_PATH)) {
-    return { major: 0, minor: 0, patch: 0 }
+export type SquadProtocolSecrets = {
+  deployPrivateKey: string
+}
+
+const latestConfigPath = path.resolve(path.join("..", "squad-config.json"))
+
+export function getConfig(): any {
+  return JSON.parse(fs.readFileSync(latestConfigPath).toString())
+}
+
+export function writeConfig(config: SquadProtocolConfig, id="default") {
+  if (id == "default") {
+    id = Date.now().toString()
   }
-  return JSON.parse(fs.readFileSync(VERSION_PATH).toString())
-}
-
-export function saveVersion(v: SemVer) {
-  fs.writeFileSync(VERSION_PATH, JSON.stringify(v))
-}
-
-export function getLatestRelease(network: string): Release {
-  const latestPath: string = `${path.dirname(VERSION_PATH)}/${network}-latest.json`
-  if (!fs.existsSync(latestPath)) {
-    throw new Error(`no release found at ${path}`)
-  }
-  return JSON.parse(fs.readFileSync(latestPath).toString())
-}
-
-/** bump the version up one. Level may be "build", "major", "minor", or
- *  "patch" A build bump does not bump the major, minor, or patch
- *  version but replaces the preRelease and build strings
- */
-export function bumpVersion(level: string, preRelease?: string, build?: string) {
-  let v = getVersion()
-  const oldVersionString = formatSemVer(v)
-  switch(level) {
-    case "major": {
-      v.major += 1
-      v.minor = 0
-      v.patch = 0
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "minor": {
-      v.minor += 1
-      v.patch = 0
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "patch": {
-      v.patch += 1
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    case "build": {
-      v.preRelease = preRelease
-      v.build = build
-      break
-    }
-    default: {
-      throw new Error(
-        `expected bump level of 'major', 'minor', or 'patch' got '${level}'`
-      )
-      break
-    }
-  }
-  const newVersionString = formatSemVer(v)
-  console.log(
-    `bumping version from ${oldVersionString} to ${newVersionString}`
+  const configFilename = `${config.network}-${id}.json`
+  const configPath = path.resolve(
+    path.join("..", "config", configFilename)
   )
-  saveVersion(v)
+  const data = JSON.stringify(config)
+  fs.writeFileSync(configPath, data)
+  fs.writeFileSync(latestConfigPath, data)
 }
 
-export function formatSemVer(v: SemVer): string {
-  let versionString: string = `${v.major}.${v.minor}.${v.patch}`
-  if (v.preRelease != undefined) {
-    versionString = `${versionString}-${v.preRelease}`
+export function getSecrets(): any {
+  const config = getConfig()
+  const secretsDir =
+    process.env.SQUAD_SECRETS_DIR || path.join(homedir(), ".squad/")
+  const secretsPath = path.join(secretsDir, `${config.network}-secrets.json`)
+  if (!fs.existsSync(secretsPath)) {
+    throw new Error(`Could not find secrets at ${secretsPath}`)
   }
-  if(v.build != undefined) {
-    versionString = `${versionString}+${v.build}`
+  try {
+    const secrets = JSON.parse(fs.readFileSync(secretsPath).toString())
+    return secrets
+  } catch (e) {
+    throw new Error(`Could not parse secrets at ${secretsPath}\n\n${e}`)
   }
-  return versionString
-}
-
-// TODO make this configurable by network
-export function writeReleaseInfo(release: Release, network: string) {
-  const latestPath = `../releases/${network}_latest.json`
-  fs.writeFileSync(VERSION_PATH, JSON.stringify(release))
-  if (fs.existsSync(latestPath)) {
-    fs.unlinkSync(latestPath)
-  }
-  fs.symlinkSync(VERSION_PATH, latestPath)
 }

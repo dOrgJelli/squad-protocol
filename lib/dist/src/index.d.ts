@@ -1,30 +1,19 @@
-export interface Addresses {
-    ERC20Mintable?: string;
-    Royalties: string;
-    ERC721Squad: string;
-    RevShareLicenseManager: string;
-    PurchasableLicenseManager: string;
-}
-export interface SemVer {
-    major: number;
-    minor: number;
-    patch: number;
-    preRelease?: string;
-    build?: string;
-}
-export interface Release {
-    version: SemVer;
+export declare type Contract = {
+    address: string;
+    abiPath: string;
+};
+export declare type ContractInfo = {
+    [index: string]: Contract;
+};
+export declare type SquadProtocolConfig = {
     network: string;
-    addresses: Addresses;
-}
-export declare function getVersion(): SemVer;
-export declare function saveVersion(v: SemVer): void;
-export declare function getLatestRelease(network: string): Release;
-/** bump the version up one. Level may be "build", "major", "minor", or
- *  "patch" A build bump does not bump the major, minor, or patch
- *  version but replaces the preRelease and build strings
- */
-export declare function bumpVersion(level: string, preRelease?: string, build?: string): void;
-export declare function formatSemVer(v: SemVer): string;
-export declare function writeReleaseInfo(release: Release, network: string): void;
+    networkNameOrUrl: string;
+    contracts: ContractInfo;
+};
+export declare type SquadProtocolSecrets = {
+    deployPrivateKey: string;
+};
+export declare function getConfig(): any;
+export declare function writeConfig(config: SquadProtocolConfig, id?: string): void;
+export declare function getSecrets(): any;
 //# sourceMappingURL=index.d.ts.map

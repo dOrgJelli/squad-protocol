@@ -8,7 +8,7 @@ dataSources:
     name: ERC721Squad
     network: {{network}}
     source:
-      address: '{{erc721SquadAddress}}'
+      address: '{{contracts.ERC721Squad.address}}'
       abi: ERC721Squad
     mapping:
       kind: ethereum/events
@@ -18,7 +18,7 @@ dataSources:
         - SquadNFT
       abis:
         - name: ERC721Squad
-          file: {{{erc721SquadAbi}}}
+          file: {{{contracts.ERC721Squad.abiPath}}}
       eventHandlers:
         - event: TokenMinted(uint256,address,string,string,bytes32,bytes32)
           handler: handleTokenMinted
@@ -27,7 +27,7 @@ dataSources:
     name: PurchasableLicenseManager
     network: {{network}}
     source:
-      address: '{{purchasableLicenseManagerAddress}}'
+      address: '{{contracts.PurchasableLicenseManager.address}}'
       abi: PurchasableLicenseManager
     mapping:
       kind: ethereum/events
@@ -40,7 +40,7 @@ dataSources:
         - PurchaseEvent
       abis:
         - name: PurchasableLicenseManager
-          file: {{{purchasableLicenseManagerAbi}}}
+          file: {{{contracts.PurchasableLicenseManager.abiPath}}}
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint256,uint8,address)
           handler: handleNFTRegistered
@@ -53,7 +53,7 @@ dataSources:
     name: RevShareLicenseManager
     network: {{network}}
     source:
-      address: '{{revShareLicenseManagerAddress}}'
+      address: '{{contracts.RevShareLicenseManager.address}}'
       abi: RevShareLicenseManager
     mapping:
       kind: ethereum/events
@@ -65,7 +65,7 @@ dataSources:
         - RevShareLicense
       abis:
         - name: RevShareLicenseManager
-          file: {{{revShareLicenseManagerAbi}}}
+          file: {{{contracts.RevShareLicenseManager.abiPath}}}
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint8)
           handler: handleNFTRegistered
@@ -76,7 +76,7 @@ dataSources:
     name: Royalties
     network: {{network}}
     source:
-      address: '{{royaltiesAddress}}'
+      address: '{{contracts.Royalties.address}}'
       abi: Royalties
     mapping:
       kind: ethereum/events
@@ -87,7 +87,7 @@ dataSources:
         - Transfer
       abis:
         - name: Royalties
-          file: {{{royaltiesAbi}}}
+          file: {{{contracts.Royalties.abiPath}}}
       eventHandlers:
         - event: WindowIncremented(uint256,uint256,uint256,bytes32)
           handler: handleWindowIncremented

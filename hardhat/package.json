@@ -5,8 +5,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "up": "npx hardhat node",
-    "deploy:local": "hardhat compile && hardhat run scripts/deploy.ts --network localhost",
+    "build": "hardhat compile",
+    "deploy": "ts-node scripts/deploy.ts",
+
     "test": "hardhat test",
     "test:local": "hardhat --network localhost test"
   },

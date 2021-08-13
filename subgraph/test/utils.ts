@@ -1,28 +1,39 @@
 import { ethers } from 'ethers'
 import axios from 'axios'
 import BalanceTree from '../../hardhat/lib/balance-tree'
-import { getLatestRelease } from '@squad/lib'
+import { getConfig, getSecrets } from '@squad/lib'
 
-const PurchasableLicenseManagerAbi = require('../../hardhat/abis/PurchasableLicenseManager.json')
-const RevShareLicenseManagerAbi = require('../../hardhat/abis/RevShareLicenseManager.json')
-const SquadNFTAbi = require('../../hardhat/abis/ERC721Squad.json')
-const ERC20Abi = require('../../hardhat/abis/ERC20Mintable.json')
-const RoyaltiesAbi = require('../../hardhat/abis/Royalties.json')
+const config = getConfig()
+const secrets = getSecrets()
+const contracts = config.contracts
 
-const APIURL = 'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
-const release = getLatestRelease("localhost", "../releases")
-const SQUAD_NFT_ADDR = release.addresses.ERC721Squad.toLowerCase()
-const FDAI_ADDR = release.addresses.ERC20Mintable?.toLowerCase() ?? ""
-const ROYALTIES_ADDR = release.addresses.Royalties.toLowerCase()
+const PurchasableLicenseManagerAbi =
+  require(contracts.PurchasableLicenseManager.abiPath).abi
+const RevShareLicenseManagerAbi =
+  require(contracts.RevShareLicenseManager.abiPath).abi
+const SquadNFTAbi = require(contracts.ERC721Squad.abiPath).abi
+const ERC20Abi = require(contracts.ERC20Mintable.abiPath).abi
+const RoyaltiesAbi = require(contracts.Royalties.abiPath).abi
+
+const APIURL =
+  'http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph'
+
+const SQUAD_NFT_ADDR = contracts.ERC721Squad.address.toLowerCase()
+const FDAI_ADDR = contracts.ERC20Mintable.address.toLowerCase()
+const ROYALTIES_ADDR = contracts.Royalties.address.toLowerCase()
 const PERCENTAGE_SCALE = 10e5
 const ALICE_ALLOC = ethers.BigNumber.from(50 * PERCENTAGE_SCALE)
 
-export const PURCHASABLE_LM_ADDR = release.addresses.PurchasableLicenseManager.toLowerCase()
-export const REV_SHARE_LM_ADDR = release.addresses.RevShareLicenseManager.toLowerCase()
+export const PURCHASABLE_LM_ADDR =
+  contracts.PurchasableLicenseManager.address.toLowerCase()
+export const REV_SHARE_LM_ADDR =
+  contracts.RevShareLicenseManager.address.toLowerCase()
 export const DEF_PRICE = ethers.utils.parseEther('10')
 export const DEF_SHARE = 50
 
-const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/')
+const provider = ethers.getDefaultProvider(config.networkNameOrUrl)
+
+let i=0
 
 const squadNft = new ethers.Contract(
   SQUAD_NFT_ADDR,
@@ -35,30 +46,33 @@ const royalties = new ethers.Contract(
   RoyaltiesAbi,
   provider
 )
+
 const purchasableLicenseManager = new ethers.Contract(
   PURCHASABLE_LM_ADDR,
   PurchasableLicenseManagerAbi,
   provider
 )
+
 const revShareLicenseManager = new ethers.Contract(
   REV_SHARE_LM_ADDR,
   RevShareLicenseManagerAbi,
   provider
 )
+
 const fDai = new ethers.Contract(
   FDAI_ADDR,
   ERC20Abi,
   provider
 )
 
+export const signer = new ethers.Wallet(secrets.deployPrivateKey, provider)
+
 export async function getSigner() {
-  const signer = await provider.getSigner()
   return signer
 }
 
 export async function getAddress() {
-  const signer = await getSigner()
-  return await signer.getAddress()
+  return signer.address
 }
 
 const getAliceRoyalties = async () => {
