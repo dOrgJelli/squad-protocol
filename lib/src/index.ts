@@ -24,8 +24,8 @@ export type SquadProtocolSecrets = {
 
 const latestConfigPath = path.resolve(path.join("..", "squad-config.json"))
 
-export function getConfig(): any {
-  return JSON.parse(fs.readFileSync(latestConfigPath).toString())
+export function getConfig(path=latestConfigPath): any {
+  return JSON.parse(fs.readFileSync(path).toString())
 }
 
 export function writeConfig(config: SquadProtocolConfig, id="default") {

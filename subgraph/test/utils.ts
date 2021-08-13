@@ -65,6 +65,7 @@ const fDai = new ethers.Contract(
   provider
 )
 
+// TODO revert subgraph test utils signer and contract connections to sync
 export const signer = new ethers.Wallet(secrets.deployPrivateKey, provider)
 
 export async function getSigner() {

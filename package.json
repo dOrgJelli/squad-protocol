@@ -28,6 +28,7 @@
     "test:hardhat": "yarn workspace @squad/hardhat test:local",
     "test:polywrap": "yarn workspace @squad/polywrap test",
     "test:subgraph": "yarn workspace @squad/subgraph test",
+    "test:lib": "yarn workspace @squad/lib test",
 
     "todos": "git grep TODO ':!package.json'"
 
