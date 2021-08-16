@@ -1,62 +1,62 @@
 // From Mirror.xyz
 
-import MerkleTree from "./merkle-tree";
-import { BigNumber, utils } from "ethers";
+import MerkleTree from './merkle-tree'
+import { BigNumber, utils } from 'ethers'
 
 export default class BalanceTree {
-  private readonly tree: MerkleTree;
-  constructor(balances: { account: string; allocation: BigNumber }[]) {
+  private readonly tree: MerkleTree
+  constructor (balances: Array<{ account: string, allocation: BigNumber }>) {
     this.tree = new MerkleTree(
       balances.map(({ account, allocation }, index) => {
-        return BalanceTree.toNode(account, allocation);
+        return BalanceTree.toNode(account, allocation)
       })
-    );
+    )
   }
 
-  public static verifyProof(
+  public static verifyProof (
     account: string,
     allocation: BigNumber,
     proof: Buffer[],
     root: Buffer
   ): boolean {
-    let pair = BalanceTree.toNode(account, allocation);
+    let pair = BalanceTree.toNode(account, allocation)
     for (const item of proof) {
-      pair = MerkleTree.combinedHash(pair, item);
+      pair = MerkleTree.combinedHash(pair, item)
     }
 
-    return pair.equals(root);
+    return pair.equals(root)
   }
 
-  public static toNode(account: string, allocation: BigNumber): Buffer {
+  public static toNode (account: string, allocation: BigNumber): Buffer {
     return Buffer.from(
       utils
-        .solidityKeccak256(["address", "uint256"], [account, allocation])
+        .solidityKeccak256(['address', 'uint256'], [account, allocation])
         .substr(2),
-      "hex"
-    );
+      'hex'
+    )
   }
 
-  public getRoot(): Buffer {
-    return this.tree.getRoot();
+  public getRoot (): Buffer {
+    return this.tree.getRoot()
   }
 
-  public getHexRoot(): string {
-    return this.tree.getHexRoot();
+  public getHexRoot (): string {
+    return this.tree.getHexRoot()
   }
 
   // returns the Buffer values of the proof
-  public getProof(
+  public getProof (
     account: string,
     allocation: BigNumber
   ): Buffer[] {
-    return this.tree.getProof(BalanceTree.toNode(account, allocation));
+    return this.tree.getProof(BalanceTree.toNode(account, allocation))
   }
 
   // returns the hex bytes32 values of the proof
-  public getHexProof(
+  public getHexProof (
     account: string,
     allocation: BigNumber
   ): string[] {
-    return this.tree.getHexProof(BalanceTree.toNode(account, allocation));
+    return this.tree.getHexProof(BalanceTree.toNode(account, allocation))
   }
 }

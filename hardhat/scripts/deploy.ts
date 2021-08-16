@@ -9,7 +9,7 @@ import { RevShareLicenseManager__factory } from '../typechain/factories/RevShare
 import { PurchasableLicenseManager__factory } from '../typechain/factories/PurchasableLicenseManager__factory'
 import { getConfig, writeConfig, getSecrets } from '@squad/lib'
 
-function getAbiPath(contractName: string) {
+function getAbiPath (contractName: string): string {
   const filePath = path.resolve(
     `./artifacts/contracts/${contractName}.sol/${contractName}.json`
   )
@@ -19,7 +19,7 @@ function getAbiPath(contractName: string) {
   return filePath
 }
 
-async function main() {
+async function main (): Promise<void> {
   const config = getConfig()
   const secrets = getSecrets()
   const network: string = config.networkNameOrUrl
@@ -38,35 +38,35 @@ async function main() {
   console.log(`fDai deployed to ${erc20.address}`)
   config.contracts.ERC20Mintable = {
     address: erc20.address,
-    abiPath: getAbiPath("ERC20Mintable")
+    abiPath: getAbiPath('ERC20Mintable')
   }
 
   const royalties = await RoyaltiesFactory.deploy(erc20.address)
   console.log(`Royalties deployed to ${royalties.address}`)
   config.contracts.Royalties = {
     address: royalties.address,
-    abiPath: getAbiPath("Royalties")
+    abiPath: getAbiPath('Royalties')
   }
 
-  const squadNft = await SquadNftFactory.deploy("Squad", "sNFT")
+  const squadNft = await SquadNftFactory.deploy('Squad', 'sNFT')
   console.log(`ERC721Squad deployed to ${squadNft.address}`)
   config.contracts.ERC721Squad = {
     address: squadNft.address,
-    abiPath: getAbiPath("ERC721Squad")
+    abiPath: getAbiPath('ERC721Squad')
   }
 
   const revShareLicenseManager = await RevSharelicenseManagerFactory.deploy(
-    "Revenue share license",
+    'Revenue share license',
     squadNft.address
   )
   console.log(`RevShareLicenseManager deployed to ${revShareLicenseManager.address}`)
   config.contracts.RevShareLicenseManager = {
     address: revShareLicenseManager.address,
-    abiPath: getAbiPath("RevShareLicenseManager")
+    abiPath: getAbiPath('RevShareLicenseManager')
   }
 
   const purchasableLicenseManager = await PurchasableLicenseManagerFactory.deploy(
-    "Purchasable license",
+    'Purchasable license',
     squadNft.address,
     erc20.address,
     royalties.address
@@ -74,14 +74,14 @@ async function main() {
   console.log(`PurchasableLicenseManager deployed to ${purchasableLicenseManager.address}`)
   config.contracts.PurchasableLicenseManager = {
     address: purchasableLicenseManager.address,
-    abiPath: getAbiPath("PurchasableLicenseManager")
+    abiPath: getAbiPath('PurchasableLicenseManager')
   }
   writeConfig(config)
 }
 
 main()
-    .then(() => process.exit(0))
-    .catch(error => {
-        console.error(error)
-        process.exit(1)
-})
+  .then(() => process.exit(0))
+  .catch((error: Error) => {
+    console.error(error)
+    process.exit(1)
+  })

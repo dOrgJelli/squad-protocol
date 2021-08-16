@@ -7,9 +7,10 @@
   "scripts": {
     "build": "hardhat compile",
     "deploy": "ts-node scripts/deploy.ts",
-
     "test": "hardhat test",
-    "test:local": "hardhat --network localhost test"
+    "test:local": "hardhat --network localhost test",
+    "lint": "ts-standard",
+    "format": "ts-standard --fix"
   },
   "dependencies": {
     "@squad/lib": "0.1.0"
@@ -29,6 +30,7 @@
     "ethers": "^5.1.0",
     "hardhat": "^2.1.2",
     "ts-node": "^10.0.0",
+    "ts-standard": "^10.0.0",
     "typechain": "^5.1.1",
     "typescript": "^4.3.4"
   }

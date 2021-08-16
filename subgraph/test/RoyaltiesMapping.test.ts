@@ -1,10 +1,10 @@
 /**
  * a full local subgraph + contracts must be deployed before running tests (see README)
- * 
+ *
  * - on TransferToken
  *    - Token transfer is added to subgraph
  *    - Total unclaimed in royalties is reduced in subgraph
- * 
+ *
  * - on WindowIncremented
  *    - new window is added to subgraph, at the correct index
  */
@@ -12,7 +12,7 @@
 import { assert } from 'chai'
 import {
   getProofInfo,
-  getAddress,
+  signer,
   queryWindow,
   queryTransfer,
   mintAndIncrement,
@@ -22,7 +22,7 @@ import {
   getCurrentWindow
 } from './utils'
 
-async function checkWindow(): Promise<number> {
+async function checkWindow (): Promise<number> {
   const blockNumber = await mintAndIncrement()
   const currentWindowNumber = await getCurrentWindow()
   const index = currentWindowNumber - 1
@@ -38,7 +38,7 @@ async function checkWindow(): Promise<number> {
   return index
 }
 
-describe('Royalties mapping', function () {
+describe('Royalties mapping', function (this: any) {
   this.timeout(20000)
 
   it('adds a new window on WindowIncremented event', async () => {
@@ -54,7 +54,7 @@ describe('Royalties mapping', function () {
     const claimAmount = 5000000000000000000
     const afterTotalClaimable = beforeTotalClaimable - claimAmount
 
-    const aliceAddress = await getAddress()
+    const aliceAddress = await signer.address
     assert.equal(transfer.to, aliceAddress.toLowerCase(), 'to')
     assert.equal(transfer.amount, claimAmount.toString(), 'amount')
     assert.equal(transfer.totalClaimableBalance, afterTotalClaimable, 'total')

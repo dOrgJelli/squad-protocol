@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">29.63% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/24</span>
+                <span class='fraction'>8/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">29.63% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/24</span>
+                <span class='fraction'>8/27</span>
             </div>
         
             
@@ -115,7 +115,12 @@
 <a name='L56'></a><a href='#L56'>56</a>
 <a name='L57'></a><a href='#L57'>57</a>
 <a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -138,7 +143,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -160,6 +164,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -176,51 +186,56 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as fs from 'fs'
 import * as path from 'path'
 import { homedir } from 'os'
-import { ethers } from 'ethers'
 &nbsp;
-export type Contract = {
-  address: string,
+export interface Contract {
+  address: string
   abiPath: string
 }
 &nbsp;
-export type ContractInfo = {
+export interface ContractInfo {
   [index: string]: Contract
 }
 &nbsp;
-export type SquadProtocolConfig = {
-  network: string,
-  networkNameOrUrl: string,
+export interface SquadProtocolConfig {
+  network: string
+  networkNameOrUrl: string
   contracts: ContractInfo
 }
 &nbsp;
-export type SquadProtocolSecrets = {
+export interface SquadProtocolSecrets {
   deployPrivateKey: string
 }
 &nbsp;
-const latestConfigPath = path.resolve(path.join("..", "squad-config.json"))
+const latestConfigPath = path.resolve(path.join('..', 'squad-config.json'))
 &nbsp;
-export function getConfig(path=<span class="branch-0 cbranch-no" title="branch not covered" >latestConfigPath)</span>: any {
+export function getConfig (path = <span class="branch-0 cbranch-no" title="branch not covered" >latestConfigPath)</span>: any {
   return JSON.parse(fs.readFileSync(path).toString())
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >writeConfig(</span>config: SquadProtocolConfig, id=<span class="branch-0 cbranch-no" title="branch not covered" >"default")</span> {
-<span class="cstat-no" title="statement not covered" >  if (id == "default") {</span>
+export function <span class="fstat-no" title="function not covered" >writeConfig </span>(config: SquadProtocolConfig, id = <span class="branch-0 cbranch-no" title="branch not covered" >'default')</span>: void {
+<span class="cstat-no" title="statement not covered" >  if (id === 'default') {</span>
 <span class="cstat-no" title="statement not covered" >    id = Date.now().toString()</span>
   }
   const configFilename = <span class="cstat-no" title="statement not covered" >`${config.network}-${id}.json`</span>
   const configPath = <span class="cstat-no" title="statement not covered" >path.resolve(</span>
-    path.join("..", "config", configFilename)
+    path.join('..', 'config', configFilename)
   )
   const data = <span class="cstat-no" title="statement not covered" >JSON.stringify(config)</span>
 <span class="cstat-no" title="statement not covered" >  fs.writeFileSync(configPath, data)</span>
 <span class="cstat-no" title="statement not covered" >  fs.writeFileSync(latestConfigPath, data)</span>
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >getSecrets(</span>): any {
+export function <span class="fstat-no" title="function not covered" >getSecrets </span>(): any {
   const config = <span class="cstat-no" title="statement not covered" >getConfig()</span>
+  const network: string = <span class="cstat-no" title="statement not covered" >config.network ?? ''</span>
+<span class="cstat-no" title="statement not covered" >  if (network === '') {</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error(</span>
+      '@squad/lib/getSecrets could not get secrets. Could not find network.'
+    )
+  }
   const secretsDir =
-<span class="cstat-no" title="statement not covered" >    process.env.SQUAD_SECRETS_DIR || path.join(homedir(), ".squad/")</span>
-  const secretsPath = <span class="cstat-no" title="statement not covered" >path.join(secretsDir, `${config.network}-secrets.json`)</span>
+<span class="cstat-no" title="statement not covered" >    process.env.SQUAD_SECRETS_DIR ?? path.join(homedir(), '.squad/')</span>
+  const secretsPath: string = <span class="cstat-no" title="statement not covered" >path.join(secretsDir, `${network}-secrets.json`)</span>
 <span class="cstat-no" title="statement not covered" >  if (!fs.existsSync(secretsPath)) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error(`Could not find secrets at ${secretsPath}`)</span>
   }
@@ -228,7 +243,7 @@ export function <span class="fstat-no" title="function not covered" >getSecrets(
     const secrets = <span class="cstat-no" title="statement not covered" >JSON.parse(fs.readFileSync(secretsPath).toString())</span>
 <span class="cstat-no" title="statement not covered" >    return secrets</span>
   } catch (e) {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`Could not parse secrets at ${secretsPath}\n\n${e}`)</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error(`Could not parse secrets at ${secretsPath}\n\n${e.toString()}`)</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -238,7 +253,7 @@ export function <span class="fstat-no" title="function not covered" >getSecrets(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Aug 13 2021 14:28:54 GMT-0500 (Central Daylight Time)
+                at Mon Aug 16 2021 11:23:32 GMT-0500 (Central Daylight Time)
             </div>
         </div>
         <script src="prettify.js"></script>

@@ -12,8 +12,7 @@
     "polywrap",
     "subgraph",
     "wallet-connect",
-    "lib",
-    "runtime-environment"
+    "lib"
   ],
   "scripts": {
 
@@ -23,6 +22,9 @@
     "build": "./scripts/build.sh",
 
     "deploy": "./scripts/deploy.sh",
+
+    "lint": "./scripts/lint.sh",
+    "format": "./scripts/format.sh",
 
     "test": "yarn test:hardhat && yarn test:polywrap && yarn test:subgraph",
     "test:hardhat": "yarn workspace @squad/hardhat test:local",

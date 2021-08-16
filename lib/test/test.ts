@@ -5,7 +5,7 @@ test('tests can pass', () => {
 })
 
 test('getConfig returns a config object', () => {
-  const config = lib.getConfig("test/test-config.json")
+  const config = lib.getConfig('test/test-config.json')
   console.log(config)
-  expect(config.testConfigKey).toBe("testConfigValue")
+  expect(config.testConfigKey).toBe('testConfigValue')
 })

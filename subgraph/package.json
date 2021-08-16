@@ -15,6 +15,10 @@
     "test": "yarn test:one",
     "test:one": "mocha -f 'should add an NFT on TokenMinted event' -r ts-node/register ./test/*",
     "ci": "yarn test:all",
+
+    "lint": "ts-standard",
+    "format": "ts-standard --fix",
+
     "test:all": "mocha -r ts-node/register ./test/*",
     "secrets": "echo POSTGRES_PASSWORD=`cat ~/.squad/localhost-secrets.json | jq '.subgraphPostgresPassword'` > ~/.squad/subgraph-localhost-env"
   },
@@ -36,5 +40,8 @@
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "node-jq": "^2.0.0"
+  },
+  "ts-standard": {
+    "ignore": ["src"]
   }
 }

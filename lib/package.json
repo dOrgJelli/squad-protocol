@@ -6,7 +6,9 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "test": "yarn build && jest --collect-coverage",
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "lint": "ts-standard",
+    "format": "ts-standard --fix"
   },
   "author": "",
   "license": "MIT",
@@ -17,7 +19,8 @@
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
-    "jest": "^27.0.6"
+    "jest": "^27.0.6",
+    "ts-standard": "^10.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -32,6 +35,8 @@
       }
     },
     "displayName": "@squad/lib",
-    "roots": ["dist"]
+    "roots": [
+      "dist"
+    ]
   }
 }
