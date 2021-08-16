@@ -10,7 +10,7 @@
     "deploy": "npx w3 build --ipfs http://localhost:5001 --test-ens squadprotocol.eth",
     "lint": "echo 'linting for assemblyscript is not mature. Not implemented'",
     "format": "echo 'linting for assemblyscript is not mature. Not implemented'",
-    "test": "yarn constants:local && npx w3 query ./recipes/e2e.json",
+    "test": "yarn constants:local && npx w3 query ./recipes/e2e.json && yarn lint",
     "constants:local": "NETWORK=localhost node ./scripts/get-constants.js"
   },
   "devDependencies": {

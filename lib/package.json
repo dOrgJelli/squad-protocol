@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "test": "yarn build && jest --collect-coverage",
+    "test": "yarn build && jest --collect-coverage && yarn lint",
     "build": "tsc --build",
     "lint": "ts-standard",
     "format": "ts-standard --fix"

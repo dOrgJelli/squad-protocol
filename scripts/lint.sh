@@ -8,3 +8,5 @@ echo "linting @squad/subgraph"
 yarn workspace @squad/subgraph lint
 echo "linting @squad/lib"
 yarn workspace @squad/lib lint
+echo "linting @squad/wallet-connect"
+yarn workspace @squad/wallet-connect

@@ -8,16 +8,14 @@ and create your secrets file.
 
 `$ yarn`
 
-create a file in your home folder called `.squad-secrets.json`. Look
+Create your secrets file here `~/.squad/localhost-secrets.json`. Look
 in `hardhat.config.ts` for more details about what it'll need, but you
 can start by adding something like this
 
 ```
 {
-        "ropsten": {
-                   "privateKey": "...",
-                   "alchemyApiKey": "...",
-        }
+  "deployPrivateKey": "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d",
+  "subgraphPostgresPassword": "your-localhost-password-here"
 }
 ```
 
@@ -25,7 +23,7 @@ To stand up a **full local dev environment**
 
 `$ yarn up`
 
-To run all tests
+To run all tests (and linting)
 
 `$ yarn test`
 
@@ -36,6 +34,15 @@ To run workspace specific tests run either
 To tear down the local dev environment
 
 `$ yarn down`
+
+### Changing networks
+
+THIS IS CURRENTLY UNTESTED but it should work something like this
+
+Edit the "network" and "networkNameOrUrl" fields in
+`squad-config.json` and create a secrets file at
+`~/.squad/<network>-secrets.json` with following the above directions
+for secrets files.
 
 ## hardhat
 

@@ -13,13 +13,13 @@
     "codegen": "graph codegen",
     "deploy": "./scripts/deploy.sh",
     "test": "yarn test:one",
-    "test:one": "mocha -f 'should add an NFT on TokenMinted event' -r ts-node/register ./test/*",
+    "test:one": "mocha -f 'should add an NFT on TokenMinted event' -r ts-node/register ./test/* && yarn lint",
     "ci": "yarn test:all",
+    "test:all": "mocha -r ts-node/register ./test/* && yarn lint",
 
     "lint": "ts-standard",
     "format": "ts-standard --fix",
 
-    "test:all": "mocha -r ts-node/register ./test/*",
     "secrets": "echo POSTGRES_PASSWORD=`cat ~/.squad/localhost-secrets.json | jq '.subgraphPostgresPassword'` > ~/.squad/subgraph-localhost-env"
   },
   "devDependencies": {
