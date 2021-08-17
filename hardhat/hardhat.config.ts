@@ -3,12 +3,8 @@
  */
 import '@typechain/hardhat'
 import '@nomiclabs/hardhat-ethers'
-import "@nomiclabs/hardhat-waffle"
+import '@nomiclabs/hardhat-waffle'
 
 module.exports = {
-  solidity: "0.8.5",
-
-  networks: {
-    hardhat: {}
-  }
+  solidity: '0.8.5'
 }

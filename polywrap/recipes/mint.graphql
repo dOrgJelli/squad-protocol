@@ -1,8 +1,8 @@
 mutation MintNFT(
   $contractAddress: String!,
   $creatorAddress: String!,
-  $contentURI: String!,
-  $metadataURI: String!
+  $content: String!,
+  $metadata: String!
 )
 {
   mintNFT(
@@ -11,7 +11,7 @@ mutation MintNFT(
     }
     contractAddress: $contractAddress
     creatorAddress: $creatorAddress
-    contentURI: $contentURI
-    metadataURI: $metadataURI
+    content: $content
+    metadata: $metadata
   )
 }

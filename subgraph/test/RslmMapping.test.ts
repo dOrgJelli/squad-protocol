@@ -1,13 +1,13 @@
 /**
  * a full local subgraph + contracts must be deployed before running tests (see README)
- * 
+ *
  * - on NFTRegistered
  *    - license is added to content in subgraph
  *    - new license replaces the previous one
- * 
+ *
  * - on NFTUnregistered
  *    - license is removed from content in subgraph
- * 
+ *
  */
 
 import { assert } from 'chai'
@@ -19,19 +19,19 @@ import {
   queryRevShareLicenses,
   makeContentId,
   makeLicenseId,
-  getAddress,
+  signer,
   registerRSL,
   unregisterRSL,
   mintAndRegisterRSL,
   delay
 } from './utils'
 
-async function checkNftRegistrationRSL(nft: NFT, share: number) {
+async function checkNftRegistrationRSL (nft: NFT, share: number): Promise<void> {
   const content = await queryContent(nft)
   const licenses = await queryRevShareLicenses(nft, REV_SHARE_LM_ADDR)
   const license = licenses[0]
 
-  const aliceAddress = await getAddress()
+  const aliceAddress = signer.address
   assert.equal(content.id, makeContentId(nft), 'content id')
   assert.equal(content.nftAddress, nft.address, 'content nft address')
   assert.equal(content.nftId, nft.id, 'content nft id')
@@ -41,7 +41,7 @@ async function checkNftRegistrationRSL(nft: NFT, share: number) {
   assert.equal(license.minSharePercentage, share, 'license share percentage')
 }
 
-describe('RevShareLicenseManager mapping', function () {
+describe('RevShareLicenseManager mapping', function (this: any) {
   this.timeout(20000)
 
   it('should add a license on NFTRegistered event', async () => {

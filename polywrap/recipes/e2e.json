@@ -9,8 +9,8 @@
       "network": "testnet",
       "contractAddress": "$ERC721Squad",
       "creatorAddress": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
-      "contentURI": "content.com",
-      "metadataURI": "metadata.com"
+      "content": "content",
+      "metadata": "metadata"
     }
   },
   {
@@ -47,6 +47,13 @@
       "address": "$ERC20Mintable",
       "owner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
       "spender": "$Royalties"
+    }
+  },
+  {
+    "query": "./getLastNftData.graphql",
+    "variables": {
+      "address": "$ERC721Squad",
+      "network": "testnet"
     }
   }
 ]

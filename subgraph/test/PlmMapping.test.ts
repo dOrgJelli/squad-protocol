@@ -1,16 +1,16 @@
 /**
  * a full local subgraph + contracts must be deployed before running tests (see README)
- * 
+ *
  * - on NFTRegistered
  *    - license is added to content in subgraph
  *    - new license replaces the previous one
- * 
+ *
  * - on NFTUnregistered
  *    - License is removed from content in subgraph
- * 
+ *
  * - on Purchase
  *    - Purchase event is added to subgraph
- * 
+ *
  * http://127.0.0.1:8000/subgraphs/name/squadgames/squad-POC-subgraph/graphql
  */
 
@@ -27,7 +27,7 @@ import {
   getPurchasableLicense,
   makeContentId,
   makeLicenseId,
-  getAddress,
+  signer,
   mintAndRegisterPL,
   registerPL,
   unregisterPL,
@@ -35,12 +35,12 @@ import {
   delay
 } from './utils'
 
-async function checkNftRegistrationPL(nft: NFT, price: ethers.BigNumber, share: number) {
+async function checkNftRegistrationPL (nft: NFT, price: ethers.BigNumber, share: number): Promise<void> {
   const content = await queryContent(nft)
   const licenses = await queryPurchasableLicenses(nft, PURCHASABLE_LM_ADDR)
   const license = licenses[0]
   const licenseTokenAddr: string = (await getPurchasableLicense(nft)).licenseToken.toLowerCase()
-  const aliceAddress = await getAddress()
+  const aliceAddress = signer.address
   assert.equal(content.id, makeContentId(nft), 'content id')
   assert.equal(content.nftAddress, nft.address, 'content nft address')
   assert.equal(content.nftId, nft.id, 'content nft id')
@@ -52,7 +52,7 @@ async function checkNftRegistrationPL(nft: NFT, price: ethers.BigNumber, share: 
   assert.equal(license.sharePercentage, share, 'license share percentage')
 }
 
-describe('PurchasableLicenseManager mapping', function () {
+describe('PurchasableLicenseManager mapping', function (this: any) {
   this.timeout(20000)
 
   it('should add a license on NFTRegistered event', async () => {
@@ -86,7 +86,7 @@ describe('PurchasableLicenseManager mapping', function () {
     const licenseTokenAddr: string = (
       await getPurchasableLicense(nft)
     ).licenseToken.toLowerCase()
-    const aliceAddress = await getAddress()
+    const aliceAddress = signer.address
     assert.equal(purchase.licenseTokenAddress, licenseTokenAddr, 'license token address')
     assert.equal(purchase.licensesBought, '1', 'licenses bought')
     assert.equal(purchase.pricePaid, DEF_PRICE, 'price paid')

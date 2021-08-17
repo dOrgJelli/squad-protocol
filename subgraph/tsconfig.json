@@ -4,6 +4,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true
   },
-  "include": ["test/*"],
+  "include": ["test", "config"],
   "exclude": ["node_modules", "src", "build", "generated"]
 }

@@ -1,0 +1,8 @@
+query getLastNftData($address: String!) {
+    getLastNftData(
+        connection: {
+            networkNameOrChainId: $network
+        }
+        address: $address
+    )
+}
