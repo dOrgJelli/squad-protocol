@@ -5,12 +5,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "up": "npx hardhat node",
-    "deploy:local": "PK=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d hardhat compile && hardhat run scripts/deploy.ts --network localhost",
-    "test": "hardhat compile && hardhat test",
-    "test:local": "yarn deploy:local && hardhat --network localhost test"
+    "build": "hardhat compile",
+    "deploy": "ts-node scripts/deploy.ts",
+    "test": "hardhat test && yarn lint",
+    "test:local": "hardhat --network localhost test",
+    "lint": "ts-standard",
+    "format": "ts-standard --fix"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@squad/lib": "0.1.0"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -26,6 +30,7 @@
     "ethers": "^5.1.0",
     "hardhat": "^2.1.2",
     "ts-node": "^10.0.0",
+    "ts-standard": "^10.0.0",
     "typechain": "^5.1.1",
     "typescript": "^4.3.4"
   }

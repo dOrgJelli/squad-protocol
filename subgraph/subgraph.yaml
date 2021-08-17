@@ -18,7 +18,7 @@ dataSources:
         - SquadNFT
       abis:
         - name: ERC721Squad
-          file: ../hardhat/abis/ERC721Squad.json
+          file: /home/jesse/projects/SquadGames/squad-protocol/hardhat/artifacts/contracts/ERC721Squad.sol/ERC721Squad.json
       eventHandlers:
         - event: TokenMinted(uint256,address,string,string,bytes32,bytes32)
           handler: handleTokenMinted
@@ -40,7 +40,7 @@ dataSources:
         - PurchaseEvent
       abis:
         - name: PurchasableLicenseManager
-          file: ../hardhat/abis/PurchasableLicenseManager.json
+          file: /home/jesse/projects/SquadGames/squad-protocol/hardhat/artifacts/contracts/PurchasableLicenseManager.sol/PurchasableLicenseManager.json
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint256,uint8,address)
           handler: handleNFTRegistered
@@ -65,7 +65,7 @@ dataSources:
         - RevShareLicense
       abis:
         - name: RevShareLicenseManager
-          file: ../hardhat/abis/RevShareLicenseManager.json
+          file: /home/jesse/projects/SquadGames/squad-protocol/hardhat/artifacts/contracts/RevShareLicenseManager.sol/RevShareLicenseManager.json
       eventHandlers:
         - event: NFTRegistered(address,uint256,address,uint8)
           handler: handleNFTRegistered
@@ -87,7 +87,7 @@ dataSources:
         - Transfer
       abis:
         - name: Royalties
-          file: ../hardhat/abis/Royalties.json
+          file: /home/jesse/projects/SquadGames/squad-protocol/hardhat/artifacts/contracts/Royalties.sol/Royalties.json
       eventHandlers:
         - event: WindowIncremented(uint256,uint256,uint256,bytes32)
           handler: handleWindowIncremented

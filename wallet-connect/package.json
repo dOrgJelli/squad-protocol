@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "ts-node index"
+    "test": "ts-node index && yarn lint",
+    "lint": "ts-standard",
+    "format": "ts-standard --fix"
   },
   "dependencies": {
     "@walletconnect/web3-provider": "^1.5.2",
@@ -12,6 +14,7 @@
   },
   "devDependencies": {
     "ts-node": "^10.1.0",
+    "ts-standard": "^10.0.0",
     "typescript": "^4.3.5"
   }
 }

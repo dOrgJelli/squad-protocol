@@ -1,24 +1,17 @@
 import * as fs from 'fs'
 
-const network = (process.env.NETWORK ? process.env.NETWORK : "local")
+import { getConfig } from '@squad/lib'
 
-const addresses = require('./addresses.json')
-
-const configJSON = {
-    network: network,
-    erc721SquadAddress: addresses[network].ERC721Squad,
-    erc721SquadAbi: "../hardhat/abis/ERC721Squad.json",
-    purchasableLicenseManagerAddress: addresses[network].PurchasableLicenseManager,
-    purchasableLicenseManagerAbi: "../hardhat/abis/PurchasableLicenseManager.json",
-    revShareLicenseManagerAddress: addresses[network].RevShareLicenseManager,
-    revShareLicenseManagerAbi: "../hardhat/abis/RevShareLicenseManager.json",
-    royaltiesAddress: addresses[network].Royalties,
-    royaltiesAbi: "../hardhat/abis/Royalties.json"
+const config = getConfig()
+const network: string = config.network ?? ''
+if (network === '') {
+  throw new Error('Cound not prepare config. Please set a network in config')
 }
 
-// Why do we set the network to mainnet if network is local?
-if (network == "local") { configJSON.network = "mainnet" }
+// TheGraph is weird and wants to address the local network as mainnet :shrug:
+// :/
+if (config.network === 'localhost') { config.network = 'mainnet' }
 
-fs.writeFileSync('./config/subgraphConfig.json', JSON.stringify(configJSON))
+fs.writeFileSync('./config/subgraphConfig.json', JSON.stringify(config))
 
 console.log(`Prepared subgraph config for network: ${network}`)

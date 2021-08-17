@@ -1,16 +1,7 @@
 node_modules
 */node_modules
-*/*/node_modules
-
-hardhat/artifacts
-hardhat/artifacts/*
-hardhat/cache
-hardhat/typechain
-hardhat/typechain/*
-
-subgraph/build
-subgraph/generated
-subgraph/data
+*/**/node_modules
 
 yarn-error.log
 
+config/localhost-*
