@@ -15,9 +15,8 @@ type Query {
     spender: String!
   ): BigInt!
 
-  getNftData(
+  getLastNftData(
     address: String!
     connection: Ethereum_Connection!
-    id: BigInt!
   ): String!
 }

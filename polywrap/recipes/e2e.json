@@ -50,11 +50,10 @@
     }
   },
   {
-    "query": "./getNftData.graphql",
+    "query": "./getLastNftData.graphql",
     "variables": {
       "address": "$ERC721Squad",
-      "network": "testnet",
-      "id": "1"
+      "network": "testnet"
     }
   }
 ]
